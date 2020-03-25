@@ -18,6 +18,7 @@
 
 
 在linux下面的apache配置 httpd.conf如下
+
 <VirtualHost *:80>
     ServerAdmin webmaster@dummy-host.example.com
     ServerName goadmin.woaishare.cn
@@ -29,4 +30,5 @@
     ProxyPass /ws ws://127.0.0.1:8080/ws/
     ProxyPass / http://127.0.0.1:8080/
     ProxyPassReverse / http://127.0.0.1:8080/
+    
 </VirtualHost>
