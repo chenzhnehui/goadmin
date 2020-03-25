@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>{{template "admin/common/head.html" .}}</head>
+
+	<body class="{{.ACE_SIKN}}">
+        {{template "admin/common/navbar.html" .}}
+		<div class="main-container ace-save-state" id="main-container">
+			<script type="text/javascript">
+				try{ace.settings.loadState('main-container')}catch(e){}
+			</script>
+			 {{template "admin/common/sidebar.html" .}}
+			<div class="main-content">
+				<div class="main-content-inner">
+					<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+						<ul class="breadcrumb">
+							<li>
+								<i class="ace-icon fa fa-home home-icon"></i>
+								<a href="/admin">主页</a>
+							</li>
+						</ul><!-- /.breadcrumb -->
+					</div>
+
+					<div class="page-content">
+						
+
+						<div class="row">
+							<div class="col-xs-12">
+								<!-- PAGE CONTENT BEGINS -->
+								<div class="alert alert-block alert-success">
+									<button type="button" class="close" data-dismiss="alert">
+										<i class="ace-icon fa fa-times"></i>
+									</button>
+									<i class="ace-icon fa fa-check green"></i>
+									欢迎登陆 {{.WEB_NAME}}
+								</div>
+
+								<div class="row">
+									
+									<div class="vspace-12-sm"></div>
+
+									<div class="col-sm-12">
+										<div class="widget-box">
+											<div class="widget-header widget-header-flat widget-header-small">
+												<h5 class="widget-title">
+													<i class="ace-icon fa fa-signal"></i>
+													系统信息
+												</h5>
+												<div class="widget-toolbar no-border">
+													<div class="inline dropdown-hover">
+														IP:{{.system.ip}}
+													</div>
+												</div>
+												
+											</div>
+
+											<div class="widget-body">
+												<div class="widget-main">
+													<div class="clearfix">
+														<div class="grid3">
+															<span class="grey">
+																<i class="ace-icon fa fa-facebook-square fa-2x blue"></i>
+																&nbsp; 服务器操作系统
+															</span>
+															<h4 class="bigger pull-right">{{.system.os}}</h4>
+														</div>
+
+														<div class="grid3">
+															<span class="grey">
+																<i class="ace-icon fa fa-twitter-square fa-2x purple"></i>
+																&nbsp; Golang版本
+															</span>
+															<h4 class="bigger pull-right">{{.system.version}}</h4>
+														</div>
+
+														<div class="grid3">
+															<span class="grey">
+																<i class="ace-icon fa fa-pinterest-square fa-2x red"></i>
+																&nbsp; CPU核数
+															</span>
+															<h4 class="bigger pull-right">{{.system.cpu}}核</h4>
+														</div>
+													</div>
+												</div><!-- /.widget-main -->
+											</div><!-- /.widget-body -->
+										</div><!-- /.widget-box -->
+									</div>
+									<div class="vspace-12-sm"></div>
+
+                                    <div class="col-xs-12">                                             
+                                        <div class="row">
+                                            <div class='col-xs-6 col-sm-6 pricing-box'>
+                                                <div class="widget-box widget-color-green">
+                                                    <div class="widget-header">
+                                                    <h5 class="widget-title bigger lighter">内存占用情况</h5></div>
+                                                    <div class="widget-body">
+                                                        <div class="widget-main">
+                                                           
+                                                        	<div id="piechart-mem"></div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class='col-xs-6 col-sm-6 pricing-box'>
+                                                <div class="widget-box widget-color-dark">
+                                                    <div class="widget-header">
+                                                    <h5 class="widget-title bigger lighter">磁盘占用情况</h5></div>
+                                                    <div class="widget-body">
+                                                        <div class="widget-main">
+															<div id="piechart-disk"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-12 col-sm-12">                                             
+										<div class="widget-box transparent">
+											<div class="widget-header widget-header-flat">
+												<h4 class="widget-title lighter">
+													<i class="ace-icon fa fa-signal"></i>
+													CPU占用情况
+												</h4>
+
+												<div class="widget-toolbar">
+													<a href="#" data-action="collapse">
+														<i class="ace-icon fa fa-chevron-up"></i>
+													</a>
+												</div>
+											</div>
+
+											<div class="widget-body">
+												<div class="widget-main padding-4">
+													<div id="sales-charts"></div>
+												</div><!-- /.widget-main -->
+											</div><!-- /.widget-body -->
+										</div><!-- /.col -->
+                                    </div>
+
+
+									<!-- /.col -->
+								</div><!-- /.row -->
+
+
+								<!-- PAGE CONTENT ENDS -->
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+					</div><!-- /.page-content -->
+				</div>
+			</div><!-- /.main-content -->
+
+           {{template "admin/common/footer.html" .}}
+
+		</div><!-- /.main-container -->
+
+		<!-- basic scripts -->
+
+		<!--[if !IE]> -->
+		<script src="/static/assets/js/jquery-2.1.4.min.js"></script>
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+<script src="/static/assets/js/jquery-1.11.3.min.js"></script>
+<![endif]-->
+		<script type="text/javascript">
+			if('ontouchstart' in document.documentElement) document.write("<script src='/static/assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+		</script>
+		<script src="/static/assets/js/bootstrap.min.js"></script>
+
+		<!-- page specific plugin scripts -->
+
+		<!--[if lte IE 8]>
+		  <script src="/static/assets/js/excanvas.min.js"></script>
+		<![endif]-->
+		<script src="/static/assets/js/jquery-ui.custom.min.js"></script>
+		<script src="/static/assets/js/jquery.ui.touch-punch.min.js"></script>
+		<script src="/static/assets/js/jquery.easypiechart.min.js"></script>
+		<script src="/static/assets/js/jquery.sparkline.index.min.js"></script>
+		<script src="/static/assets/js/jquery.flot.min.js"></script>
+		<script src="/static/assets/js/jquery.flot.pie.min.js"></script>
+		<script src="/static/assets/js/jquery.flot.resize.min.js"></script>
+		<script type="text/javascript" src="/static/assets/js/jquery.flot.time.js"></script>
+
+		<!-- ace scripts -->
+		<script src="/static/assets/js/ace-elements.min.js"></script>
+		<script src="/static/assets/js/ace.min.js"></script>
+
+		<!-- inline scripts related to this page -->
+		<script type="text/javascript">
+			jQuery(function($) {
+				function system(res){
+				      var mem = $('#piechart-mem').css({'width':'80%' , 'min-height':'150px'});
+					  var memObj = res.mem;
+					  memtotal = Math.ceil(memObj.total /1073741824); 
+					  memavailable = parseFloat(memObj.available /1073741824).toFixed(1)
+					  memuse = (memtotal - memavailable).toFixed(1)
+
+					 
+					  var memusedPercent = parseInt(memObj.usedPercent)
+					  var memnoPercent = 100- memusedPercent;
+
+
+					  var memdata = [
+					  	{ label: "总共内存 " + memtotal+" GB",  data:  0, color: "#87CEEB"},
+					  	{ label: "可用内存 " + memavailable+" GB",  data: 0, color: "#AFEEEE"},
+						{ label: "已用内存 " + memuse+" GB",  data:  0, color: "#FFE4B5"},
+						{ label: "空闲占比 " + memnoPercent+" %",  data: memnoPercent, color: "#68BC31"},
+						{ label: "已用占比 " + memusedPercent+" %",  data: memusedPercent, color: "#DA5430"},
+					  ]
+
+					 drawPieChart(mem, memdata);
+
+
+
+					  var disk = $('#piechart-disk').css({'width':'80%' , 'min-height':'150px'});
+					  var diskObj = res.disk
+					  var diskusedPercent = parseFloat(diskObj.usedPercent)
+					  var disknoPercent = 100- diskusedPercent;
+
+					   disktotal = diskObj.disktotalGB
+
+					   diskuse = parseFloat(diskObj.diskusedGB).toFixed(1)
+					   diskavailable = (disktotal - diskuse).toFixed(1)
+
+					  var diskdata = [
+					  	{ label: "总共容量 " + disktotal+" GB",  data:  0, color: "#87CEEB"},
+					  	{ label: "可用容量 " + diskavailable+" GB",  data: 0, color: "#AFEEEE"},
+						{ label: "已用容量 " + diskuse+" GB",  data:  0, color: "#FFE4B5"},
+
+						{ label: "空闲占比 " + diskusedPercent+"%",  data: diskusedPercent, color: "#68BC31"},
+						{ label: "已用占比 " + disknoPercent+"%",  data: disknoPercent, color: "#DA5430"}
+					  ]
+
+					 drawPieChart(disk, diskdata);
+
+
+
+					var cpulistArr  = new Array()
+				    cpulist = localStorage.getItem("cpulist");
+				    if(cpulist != "" && cpulist != "null" && cpulist != null){
+				    	cpulistArr = cpulist.split(","); //字符分割 
+				    }
+				    
+				    if(cpulistArr.length > 60){
+				    	cpulistArr.shift()
+				    }
+				    cpulistArr.push(Math.ceil(res.cpu.usedPercent))
+				   
+					var d1 = [];
+					for (var i = 0; i <= cpulistArr.length; i ++) {
+						d1.push([i, cpulistArr[i]]);
+					}
+					localStorage.setItem("cpulist",cpulistArr.join(","));
+
+				
+				 	var sales_charts = $('#sales-charts').css({'width':'100%' , 'height':'450px'});
+					$.plot("#sales-charts", [
+						{ label: "CPU利用率", data: d1 },
+					], {
+						hoverable: true,
+						shadowSize: 0,
+						series: {
+							 lines: { show: true },
+							 points: { show: true },
+						},
+						xaxis: {
+							ticks: 60,
+							min: 0,
+							max: 60,
+							tickDecimals: 0
+						},
+						yaxis: {
+							ticks: 20,
+							min: 0,
+							max: 100,
+							tickDecimals: 0
+						},
+						grid: {
+							backgroundColor: { colors: [ "#fff", "#fff" ] },
+							borderWidth: 1,
+							borderColor:'#555'
+						}
+					});
+		
+
+				  }
+
+
+
+			 function drawPieChart(placeholder, data, position) {
+			 	  $.plot(placeholder, data, {
+					series: {
+						pie: {
+							show: true,
+							tilt:0.8,
+							highlight: {
+								opacity: 0.25
+							},
+							stroke: {
+								color: '#fff',
+								width: 2
+							},
+							startAngle: 2
+						}
+					},
+					legend: {
+						show: true,
+						position: position || "ne", 
+						labelBoxBorderColor: null,
+						margin:[-30,15]
+					}
+					,
+					grid: {
+						hoverable: true,
+						clickable: true
+					}
+				 })
+			}
+
+				window.onload = function () {
+					if (window["WebSocket"]) {
+						conn = new WebSocket("ws://" + document.location.host + "/ws");
+						conn.onclose = function (evt) {
+
+						};
+						conn.onopen = function (evt) {
+
+						};
+						conn.onmessage = function (evt) {
+							msg = eval("("+evt.data+")")
+							if(msg.type == "ping"){
+								var obj = {};
+								obj.type = "pong";
+								obj = JSON.stringify(obj);
+								conn.send(obj);
+								return
+							}
+							if(msg.type == "join"){
+								$.post(location.href,{client_id:msg.clientid},function (res) {})
+								return
+							}
+							if(msg.type == "system"){
+								message = eval("("+msg.message+")")
+								system(message)
+							}
+						};
+					} else {
+						console("Your browser does not support WebSockets.")
+					}
+				};
+			})
+         
+		</script>
+
+	</body>
+</html>

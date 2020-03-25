@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>{{template "admin/common/head.html" .}} </head>
+    <body class="{{.ACE_SIKN}}">
+        {{template "admin/common/navbar.html" .}}
+        <div class="main-container ace-save-state" id="main-container">
+            <script type="text/javascript">
+                try{ace.settings.loadState('main-container')}catch(e){}
+            </script>
+            <style type="text/css">.dd{max-width: 100%;}</style>
+             {{template "admin/common/sidebar.html" .}}
+            <div class="main-content">
+                <div class="main-content-inner">
+
+                    {{template "admin/common/breadcrumbs.html" .}}
+
+                    <div class="page-content">
+                    <form class="form-horizontal" method="post" id="form">
+                        <div class="tabbable">
+                            <!-- #section:pages/faq -->
+                            <ul class="nav nav-tabs padding-18 tab-size-bigger" id="myTab">
+                                <li class="active">
+                                    <a data-toggle="tab" href="#faq-tab-1">
+                                        <i class="blue ace-icon fa fa-credit-card bigger-120"></i>
+                                        基础信息
+                                    </a>
+                                </li>
+                                <li>
+                                    <a data-toggle="tab" href="#faq-tab-2">
+                                        <i class="green ace-icon fa fa-envelope bigger-120"></i>
+                                        表单设计
+                                    </a>
+                                </li>
+                                <li>
+                                    <a data-toggle="tab" href="#faq-tab-3">
+                                        <i class="orange ace-icon fa fa-picture-o bigger-120"></i>
+                                        高级信息
+                                    </a>
+                                </li>
+
+                            </ul>
+                            <div class="tab-content no-border padding-24">
+                                <div id="faq-tab-1" class="tab-pane fade in active">
+                                    <div class="row" style="margin-top: 20px;">
+                                        <div class="form-group">
+                                            <label class="col-xs-1 control-label no-padding-right"> 模型名称 </label>
+                                            <div class="col-xs-11">
+                                                <input type="text" name="title"  placeholder="请输入名称"  datatype="*" errormsg="请输入名称" nullmsg="请输入名称"  class="form-control"  value="{{.info.Title}}" />
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-xs-1 control-label no-padding-right"> 模型标识 </label>
+                                            <div class="col-xs-11">
+                                                <input type="text" name="name" value="{{.info.Name}}"   placeholder="请输入标识，会自动建对应表"  datatype="*" errormsg="请输入标识" nullmsg="请输入标识"  class="form-control" />
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-xs-1 control-label no-padding-right"> 模型状类型 </label>
+                                            <div class="col-xs-11">
+                                                <select class="form-control" name="extend">
+                                                    <option value="0" {{if eq .info.Extend 0}}selected{{end}}>独立创建模型</option>
+                                                    <option value="1" {{if eq .info.Extend 1}}selected{{end}}>关联基础模型</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                
+                                        <div class="form-group" hidden>
+                                            <label class="col-xs-1 control-label no-padding-right"> 展示类型 </label>
+                                            <div class="col-xs-11">
+                                                <select class="form-control" name="relation">
+                                                    <option value="1" {{if eq .info.Relation 1}}selected{{end}}>列表显示</option>
+                                                    <option value="2" {{if eq .info.Relation 2}}selected{{end}}>单页显示</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                
+                                        <div class="form-group">
+                                            <label class="col-xs-1 control-label no-padding-right"> 模型状态 </label>
+                                            <div class="col-xs-11">
+                                                <select class="form-control" name="status">
+                                                    <option value="0" {{if eq .info.Status 0}}selected{{end}}>禁用</option>
+                                                    <option value="1" {{if eq .info.Status 1}}selected{{end}}>启用</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                    </div><!-- /.row -->
+                                </div>
+                                <div id="faq-tab-2" class="tab-pane fade">
+                                    <div class="row" style="margin-top: 20px;">
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                <label class="col-xs-1 control-label no-padding-right"> 表单显示 </label>
+                                                <div class="col-xs-11">
+                                                    <input type="text" value="{{.info.FieldGroup}}" name="field_group"  placeholder="请输入表单分组"   errormsg="请输入表单分组" nullmsg="请输入表单分组"  class="form-control" />
+                                                </div>
+                                            </div>
+                                             <div class="form-group">
+                                                <label class="col-xs-1 control-label no-padding-right"> 列表定义</label>
+                                                <div class="col-xs-11">                                             
+                                                    <textarea class="form-control" rows="5" placeholder="列表显示，多个换行，如 title:请输入标题，后面可以使用|函数处理" name="list_grid">{{.info.ListGrid}}</textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-xs-1 control-label no-padding-right"> 字段列表</label>
+                                                <div class="col-xs-11">
+                                                    <div class="wysiwyg-editor" id="editor1" contenteditable="false" style="max-height: 200px;height:200px;">
+                                                        <div class="dd dd-draghandle">
+                                                            {{if .attributelist}}
+                                                            <ol class="dd-list">
+                                                                {{range $k,$v := .attributelist}}
+                                                                    <li class="dd-item dd2-item" data-id="{{$v.Id}}">
+                                                                        <div class="dd-handle dd2-handle">
+                                                                            <i class="normal-icon ace-icon fa fa-bars blue bigger-130"></i>
+
+                                                                            <i class="drag-icon ace-icon fa fa-arrows bigger-125"></i>
+                                                                        </div>
+                                                                        <div class="dd2-content">{{$v.Title}}[{{$v.Name}}]</div>
+                                                                    </li>
+                                                                 {{end}} 
+                                                            </ol>
+                                                            {{else}}
+                                                             <div class="dd-empty"></div>
+                                                            {{end}}
+                                                        </div>
+                                                     </div>
+
+                                                </div>
+                                            </div>
+
+
+                                        </div><!-- /.col -->
+
+
+                                        <div class="col-xs-12">
+                                             <div class="form-group">
+                                                <label class="col-xs-1 control-label no-padding-right"> 字段显示 </label>
+                                                 <input type="hidden" name="field_sort" value="{{.info.FieldSort}}" id="field_sort">  
+                                                <div class="col-xs-11">                                             
+                                                    <div class="row">
+                                                        {{range $k,$v := (AnalysisStr .info.FieldGroup ",")}}
+                                                        <div class='col-xs-6 col-sm-{{Operation 12 "/" $v.len}} pricing-box'>
+                                                            <div class="widget-box widget-color-dark">
+                                                                <div class="widget-header">
+                                                                <h5 class="widget-title bigger lighter">{{$v.val}}</h5></div>
+                                                                <div class="widget-body">
+                                                                    <div class="widget-main">
+                                                                        <div class="dd dd-draghandle auto-sort" data-group="{{$v.key}}">
+                                                                           
+                                                                            <ol class="dd-list">
+                                                                                {{range $k1,$v1 := (GetFeildSort $.info.Id $v.key)}}
+                                                                                <li class="dd-item dd2-item" data-id="{{$v1.Id}}">
+                                                                                    <div class="dd-handle dd2-handle">
+                                                                                        <i class="normal-icon ace-icon fa fa-bars blue bigger-130"></i>
+
+                                                                                        <i class="drag-icon ace-icon fa fa-arrows bigger-125"></i>
+                                                                                    </div>
+                                                                                    <div class="dd2-content">{{$v1.Title}}[{{$v1.Name}}]</div>
+                                                                                </li>
+                                                                                {{else}}
+                                                                                    <div class="dd-empty"></div>
+                                                                                {{end}}
+                                                                            </ol>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {{end}}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+
+
+
+
+                                    </div><!-- /.row -->
+                                </div>
+                                <div id="faq-tab-3" class="tab-pane fade">
+                                    <div class="row" style="margin-top: 20px;">
+                                        <div class="col-xs-12">
+
+                                            <div class="form-group">
+                                                <label class="col-xs-1 control-label no-padding-right"> 搜索字段 </label>
+                                                <div class="col-xs-11">                                             
+                                                    <textarea class="form-control" rows="5" placeholder="搜索字段，多个换行，如 title:请输入标题，默认等于，也可以 title|like '%title%' :请输入标题，也可以 id|> id:第一个是字段，第二个是字段值,每个条件之间是 and关系" name="search_key">{{.info.SearchKey}}</textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-xs-1 control-label no-padding-right"> 列表模板 </label>
+                                                <div class="col-xs-11">
+                                                    <input type="text" value="{{.info.TemplateList}}" name="template_list"  placeholder="请输入自定义列表模板"   errormsg="请输入列表模板" nullmsg="请输入列表模板"  class="form-control" />
+                                                </div>
+                                            </div>
+                                       
+                                            <div class="form-group">
+                                                <label class="col-xs-1 control-label no-padding-right"> 新增模板 </label>
+                                                <div class="col-xs-11">
+                                                    <input type="text" value="{{.info.TemplateAdd}}" name="template_add"  placeholder="请输入自定义新增模板"   errormsg="请输入自定义新增模板" nullmsg="请输入自定义新增模板"  class="form-control" />
+                                                </div>
+                                            </div>
+                                    
+                                            <div class="form-group">
+                                                <label class="col-xs-1 control-label no-padding-right"> 编辑模板 </label>
+                                                <div class="col-xs-11">
+                                                    <input type="text" value="{{.info.TemplateEdit}}" name="template_edit"  placeholder="请输入自定义编辑模板"   errormsg="请输入编辑模板" nullmsg="请输入自定义编辑模板"  class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- /.col -->
+
+                                    </div><!-- /.row -->
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="clearfix form-actions">
+                            <div class="col-md-offset-3 col-md-9">
+                                <button class="btn btn-info" type="submit">
+                                    <i class="ace-icon fa fa-check bigger-110"></i>
+                                    提交
+                                </button>
+
+                                <input type="hidden" name="id" value="{{.info.Id}}">
+
+                                &nbsp; &nbsp; &nbsp;
+                                <button class="btn" type="button" onclick="javascript:history.back()">
+                                    <i class="ace-icon fa fa-undo bigger-110"></i>
+                                    返回
+                                </button>
+                            </div>
+                        </div>
+
+
+                    </form>
+                    </div><!-- /.page-content -->
+                </div>
+            </div><!-- /.main-content -->
+           {{template "admin/common/footer.html" .}}
+
+        </div><!-- /.main-container -->
+
+        <!-- basic scripts -->
+
+        <!--[if !IE]> -->
+        <script src="/static/assets/js/jquery-2.1.4.min.js"></script>
+
+        <!-- <![endif]-->
+
+        <!--[if IE]>
+<script src="/static/assets/js/jquery-1.11.3.min.js"></script>
+<![endif]-->
+           {{template "admin/common/js.html" .}}
+
+        <script type="text/javascript">
+            if('ontouchstart' in document.documentElement) document.write("<script src='/static/assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+        </script>
+        <script src="/static/assets/js/bootstrap.min.js"></script>
+
+        <!-- page specific plugin scripts -->
+        <script src="/static/assets/js/jquery.nestable.min.js"></script>
+
+        <!-- ace scripts -->
+        <script src="/static/assets/js/ace-elements.min.js"></script>
+        <script src="/static/assets/js/ace.min.js"></script>
+
+        <!-- inline scripts related to this page -->
+        <script type="text/javascript">
+            jQuery(function($){
+            
+                $('.dd').nestable();
+            
+                $('.dd-handle a').on('mousedown', function(e){
+                    e.stopPropagation();
+                });
+                
+                $('[data-rel="tooltip"]').tooltip();
+                $('.dd').nestable().on('change', function(){ 
+                     var all = new Array();
+                     $(".auto-sort").each(function(){
+                        var that = $(this)
+                        var group = parseInt(that.attr("data-group"))
+                        all[group] =  new Array();
+                        that.find(".dd-item").each(function(){
+                            var that1 = $(this)
+                            all[group].push(that1.attr("data-id"))
+
+                        })
+                     })
+
+                    var field_sort = new Array()
+
+                    for (var i = 0; i < all.length; i++) {
+                        if(all[i] != undefined && all[i] != 'undefined' && all[i].length >0){
+                            field_sort.push(i.toString()+":"+all[i].join(","))
+                        }
+                    }
+
+                    $("#field_sort").val(field_sort.join("|"))
+                });
+            });
+            submitForm($('#form'));
+        </script>
+    </body>
+</html>

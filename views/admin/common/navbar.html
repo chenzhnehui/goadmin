@@ -1,0 +1,192 @@
+<div id="navbar" class="navbar navbar-default          ace-save-state">
+	<div class="navbar-container ace-save-state" id="navbar-container">
+		<button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar">
+			<span class="sr-only">Toggle sidebar</span>
+
+			<span class="icon-bar"></span>
+
+			<span class="icon-bar"></span>
+
+			<span class="icon-bar"></span>
+		</button>
+
+		<div class="navbar-header pull-left">
+			<a href="index.html" class="navbar-brand">
+				<small>
+					{{.WEB_NAME}}
+				</small>
+			</a>
+		</div>
+
+		<div class="navbar-buttons navbar-header pull-right" role="navigation">
+			<ul class="nav ace-nav">
+<!-- 				<li class="grey dropdown-modal">
+					<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+						<i class="ace-icon fa fa-tasks"></i>
+						<span class="badge badge-grey">4</span>
+					</a>
+
+					<ul class="dropdown-menu-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+						 <li class="dropdown-header">
+							<i class="ace-icon fa fa-check"></i>
+							4 Tasks to complete
+						</li>
+
+						<li class="dropdown-content">
+							<ul class="dropdown-menu dropdown-navbar">
+								<li>
+									<a href="#">
+										<div class="clearfix">
+											<span class="pull-left">Software Update</span>
+											<span class="pull-right">65%</span>
+										</div>
+
+										<div class="progress progress-mini">
+											<div style="width:65%" class="progress-bar"></div>
+										</div>
+									</a>
+								</li>
+
+								<li>
+									<a href="#">
+										<div class="clearfix">
+											<span class="pull-left">Hardware Upgrade</span>
+											<span class="pull-right">35%</span>
+										</div>
+
+										<div class="progress progress-mini">
+											<div style="width:35%" class="progress-bar progress-bar-danger"></div>
+										</div>
+									</a>
+								</li>
+
+								<li>
+									<a href="#">
+										<div class="clearfix">
+											<span class="pull-left">Unit Testing</span>
+											<span class="pull-right">15%</span>
+										</div>
+
+										<div class="progress progress-mini">
+											<div style="width:15%" class="progress-bar progress-bar-warning"></div>
+										</div>
+									</a>
+								</li>
+
+								<li>
+									<a href="#">
+										<div class="clearfix">
+											<span class="pull-left">Bug Fixes</span>
+											<span class="pull-right">90%</span>
+										</div>
+
+										<div class="progress progress-mini progress-striped active">
+											<div style="width:90%" class="progress-bar progress-bar-success"></div>
+										</div>
+									</a>
+								</li>
+							</ul>
+						</li>
+
+						<li class="dropdown-footer">
+							<a href="#">
+								See tasks with details
+								<i class="ace-icon fa fa-arrow-right"></i>
+							</a>
+						</li>
+					</ul>
+				</li> -->
+
+				{{if CheckPrivileges "/admin/login/lists" .adminInfo.Id}}
+				<li class="purple dropdown-modal" id="login-lists">
+					<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+						<i class="ace-icon fa fa-bell icon-animated-bell"></i>
+						<span class="badge badge-important login-lists-count">0</span>
+					</a>
+
+					<ul class="dropdown-menu-right dropdown-navbar navbar-pink dropdown-menu dropdown-caret dropdown-close">
+						<li class="dropdown-header">
+							<i class="ace-icon fa fa-exclamation-triangle"></i>
+							您的最近登录记录
+						</li>
+
+						<li class="dropdown-content">
+							<ul class="dropdown-menu dropdown-navbar navbar-pink" id="login-lists-history">
+
+							</ul>
+						</li>
+
+						<li class="dropdown-footer">
+							<a href="#" onclick="readLoginRecord(0)">
+								全部标记已读
+								<i class="ace-icon fa fa-arrow-right"></i>
+							</a>
+						</li>
+					</ul>
+				</li>
+
+
+				{{end}}
+
+				{{if CheckPrivileges "/admin/operate/lists" .adminInfo.Id}}
+
+				<li class="green dropdown-modal" id="operate-lists">
+					<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+						<i class="ace-icon fa fa-envelope icon-animated-vertical"></i>
+						<span class="badge badge-success operate-lists-count">0</span>
+					</a>
+
+					<ul class="dropdown-menu-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+						<li class="dropdown-header">
+							<i class="ace-icon fa fa-envelope-o"></i>
+							你的最近操作记录
+						</li>
+
+						<li class="dropdown-content">
+							<ul class="dropdown-menu dropdown-navbar" id="operate-lists-history">
+							</ul>
+						</li>
+
+					    <li class="dropdown-footer">
+							<a href="#" onclick="readOperateRecord(0)">
+								全部标记已读
+								<i class="ace-icon fa fa-arrow-right"></i>
+							</a>
+						</li>
+					</ul>
+				</li>
+				{{end}}
+
+				<li class="light-blue dropdown-modal">
+					<a data-toggle="dropdown" href="#" class="dropdown-toggle">
+						<img class="nav-user-photo" src="/static/assets/images/avatars/user.jpg" alt="Jason's Photo" />
+						<span class="user-info">
+							<small>登录用户</small>
+							{{.adminInfo.Username}}
+						</span>
+
+						<i class="ace-icon fa fa-caret-down"></i>
+					</a>
+
+					<ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+						{{if CheckPrivileges "/admin/user/password" .adminInfo.Id}}
+							<li>
+								<a href="/admin/user/password">
+									<i class="ace-icon fa fa-cog"></i>
+									密码修改
+								</a>
+							</li>
+						{{end}}
+						<li class="divider"></li>
+						<li>
+							<a href="/admin/user/logout">
+								<i class="ace-icon fa fa-power-off"></i>
+								退出登录
+							</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</div><!-- /.navbar-container -->
+</div>

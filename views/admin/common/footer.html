@@ -1,0 +1,104 @@
+	<div class="footer">
+		<div class="footer-inner">
+			<div class="footer-content">
+				<span class="bigger-120">
+					<span class="blue"><a href="http://www.woaishare.cn" target="_blank">版权所有</a> </span>
+					{{.WEB_NAME}} &copy; 2020-2030
+				</span>
+
+				&nbsp; &nbsp;
+				<span class="action-buttons">
+					<a href="#">
+						<i class="ace-icon fa fa-twitter-square light-blue bigger-150"></i>
+					</a>
+
+					<a href="#">
+						<i class="ace-icon fa fa-facebook-square text-primary bigger-150"></i>
+					</a>
+
+					<a href="#">
+						<i class="ace-icon fa fa-rss-square orange bigger-150"></i>
+					</a>
+				</span>
+			</div>
+		</div>
+	</div>
+	<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+		<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+		<div hidden><script type="text/javascript" src="//js.users.51.la/20709835.js"></script>	</div>
+	</a>
+
+	<script>
+		  window.onload = function(){
+			  if($("#login-lists").length>0)
+			  {
+				  $.get("/admin/login/lists",function (res) {
+				  	var str = "";
+				  	var reads = 0;
+				  	if(res.length != undefined){
+				  		for (var i=0;i<res.length;i++){
+							str += '<li><a href=\"#\"><div class=\"clearfix\"><span class="pull-left"><i class="btn btn-xs no-hover btn-pink fa fa-comment"></i>';
+							str += "&nbsp;&nbsp;"+res[i].CreateTime+"</span>";
+							if(res[i].Read == 0){
+								reads ++;
+								str += '<span class="pull-right badge badge-info" onclick="readLoginRecord('+res[i].Id+')">未读</span>';
+							}else{
+								str += '<span class="pull-right badge badge-success">已读</span>';
+							}
+							str += '</div></a></li>';
+						}
+						$("#login-lists-history").html(str)
+					}
+				  	$(".login-lists-count").text(reads)
+				  })
+			  }
+
+			  if($("#operate-lists").length>0)
+			  {
+				  $.get("/admin/operate/lists",function (res) {
+				  	var str = "";
+				  	var operatereads = 0;
+				  	if(res.length != undefined){
+				  		for (var i=0;i<res.length;i++){
+				  			str+='<li>';
+									str+='<a href="#" class="clearfix">';
+										str+='<img src="/static/assets/images/avatars/avatar.png" class="msg-photo"  />';
+										str+='<span class="msg-body">';
+											str+='<span class="msg-title">';
+												str+='<span class="blue">URL:</span>';
+												str+= res[i].Url;
+											str+='</span>';
+
+											str+='<span class="msg-time">';
+												str+='<i class="ace-icon fa fa-clock-o"></i>';
+												str+='<span>&nbsp;&nbsp;'+res[i].CreateTime+'</span>';
+											str+='</span>';
+										str+='</span>';
+									str+='</a>';
+								str+='</li>';
+
+							if(res[i].Read == 0){
+								operatereads ++;
+							}
+							
+						}
+						$("#operate-lists-history").html(str)
+					}
+				  	$(".operate-lists-count").text(operatereads)
+				  })
+			  }
+
+
+		　}
+		  function readLoginRecord(id) {
+			  $.post('/admin/login/lists',{id:id},function (res) {
+				  location.reload(true)
+			  })
+		  }
+		  function readOperateRecord(id) {
+			  $.post('/admin/operate/lists',{id:id},function (res) {
+				  location.reload(true)
+			  })
+		  }
+
+	</script>

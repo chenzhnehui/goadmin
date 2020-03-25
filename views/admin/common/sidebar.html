@@ -1,0 +1,89 @@
+			<div id="sidebar" class="sidebar responsive ace-save-state">
+				<script type="text/javascript">
+					try{ace.settings.loadState('sidebar')}catch(e){}
+				</script>
+
+				<div class="sidebar-shortcuts" id="sidebar-shortcuts">
+					<div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
+						<button class="btn btn-info skin-colorpicker-change"  data-skin="no-skin">
+							<i class="ace-icon fa fa-signal"></i>
+						</button>
+
+						<button class="btn btn-inverse skin-colorpicker-change"  data-skin="skin-1">
+							<i class="ace-icon fa fa-pencil"></i>
+						</button>
+
+						<button class="btn btn-pink skin-colorpicker-change" data-skin="skin-2">
+							<i class="ace-icon fa fa-users"></i>
+						</button>
+
+						<button class="btn btn-light skin-colorpicker-change"  data-skin="skin-3">
+							<i class="ace-icon fa fa-cogs"></i>
+						</button>
+					</div>
+
+					<div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
+						<span class="btn btn-info skin-colorpicker-change" data-skin="no-skin"></span>
+
+						<span class="btn btn-inverse skin-colorpicker-change" data-skin="skin-1"></span>
+
+						<span class="btn btn-pink skin-colorpicker-change" data-skin="skin-2"></span>
+
+						<span class="btn btn-ligh skin-colorpicker-change" data-skin="skin-3"></span>
+					</div>
+				</div><!-- /.sidebar-shortcuts -->
+
+				<ul class="nav nav-list">
+
+
+					{{range $k,$v := .menu_groups_list}}
+					{{if or $v.Son $v.Url}}
+
+						<li class="{{$v.Active}}">
+							{{if $v.Son}}<a href="javascript:;" class="dropdown-toggle">{{else}}<a href="{{$v.Url}}">{{end}}
+								<i class="menu-icon fa {{$v.Icon}}"></i>
+								<span class="menu-text"> {{$v.Title}} </span>
+								{{if $v.Son}}
+								<b class="arrow fa fa-angle-down"></b>
+								{{end}}
+							</a>
+
+							<b class="arrow"></b>
+ 							{{if $v.Son}}
+								<ul class="submenu">
+									{{range $k1,$v1 := $v.Son}}
+										<li class="{{$v1.Active}}">
+											{{if $v1.Son}}<a href="javascript:;" class="dropdown-toggle">{{else}}<a href="{{$v1.Url}}">{{end}}
+												<i class="menu-icon fa fa-caret-right"></i>
+												{{$v1.Title}}
+												{{if $v1.Son}}
+												<b class="arrow fa fa-angle-down"></b>
+												{{end}}
+											</a>
+											<b class="arrow"></b>
+											{{if $v1.Son}}
+											<ul class="submenu nav-show">
+												{{range $k2,$v2 := $v1.Son}}
+												<li class="{{$v2.Active}}">
+													<a href="{{$v2.Url}}">
+
+														<span>├</span> &nbsp;&nbsp;{{$v2.Title}}
+													</a>
+													<b class="arrow"></b>
+												</li>
+												{{end}}
+											</ul>
+											{{end}}
+										</li>
+									{{end}} 
+								</ul>
+							 {{end}}
+						</li>
+					{{end}}
+					{{end}}
+				</ul><!-- /.nav-list -->
+
+				<div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
+					<i id="sidebar-toggle-icon" class="ace-icon fa fa-angle-double-left ace-save-state" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
+				</div>
+			</div>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>{{template "admin/common/head.html" .}} </head>
+    <body class="{{.ACE_SIKN}}">
+        {{template "admin/common/navbar.html" .}}
+        <div class="main-container ace-save-state" id="main-container">
+            <script type="text/javascript">
+                try{ace.settings.loadState('main-container')}catch(e){}
+            </script>
+             {{template "admin/common/sidebar.html" .}}
+            <div class="main-content">
+                <div class="main-content-inner">
+
+                    {{template "admin/common/breadcrumbs.html" .}}
+
+
+                    <div class="page-content">
+                       
+                        <form id="form">
+                            <div class="page-header">
+                                <button type="button" class="btn btn-sm btn-error nocheck">批量去选</button>
+                                <button type="button" class="btn btn-sm btn-success allcheck">批量全选</button>
+                            </div>
+                            <!-- /.page-header -->
+                            <div class="row">
+                                <div class='col-xs-6 col-sm-6 pricing-box'>
+                                    <div class="widget-box widget-color-dark">
+                                        <div class="widget-header">
+                                        <h5 class="widget-title bigger lighter">菜单权限</h5></div>
+                                        <div class="widget-body">
+                                            <div class="widget-main">
+                                                <div class="">
+                                                    {{range $k,$v := .privileges}}
+                                                    <ol class="dd-list">
+                                                        <li class="dd-item" data-id="-{{$v.Id}}">
+                                                            <div class="dd-handle" for="selects-{{$v.Id}}">
+                                                                <label>
+                                                                    <input type="checkbox" {{if $v.Check}}checked{{end}} data-class='first-{{$v.Id}}' class="ace one-checkbox" data-level='1' value='-{{$v.Id}}' name="auth">
+                                                                    <span class="lbl">{{$v.Title}}</span>
+                                                                </label>
+                                                            </div>
+                                                            {{if $v.Son}}
+                                                            {{range $k1,$v1 := $v.Son}}
+                                                            <ol class="dd-list">
+                                                                <li class="dd-item" data-id="{{$v1.Id}}">
+                                                                    <div class="dd-handle">
+                                                                        <label>
+                                                                            <input {{if $v1.Check}}checked{{end}} name="auth" data-class='second-{{$v1.Id}}'  data-level='2' type="checkbox" class="ace first-{{$v.Id}} second-checkbox" value='{{$v1.Id}}'>
+                                                                            <span class="lbl">{{$v1.Title}}</span>
+                                                                        </label>
+                                                                    </div>
+                                                                    {{if $v1.Twoson}}
+                                                                    <ol class="dd-list">
+                                                                        {{range $k2,$v2 := $v1.Twoson}}
+                                                                        <label for="check-third-{{$v2.Id}}">
+                                                                            <input name="auth" {{if $v2.Check}}checked{{end}} data-class='third-{{$v2.Id}}'  data-level='3' type="checkbox" id="check-third-{{$v2.Id}}" class="ace first-{{$v.Id}} second-{{$v1.Id}} select-checkbox" value='{{$v2.Id}}'>
+                                                                            <span class="lbl">{{$v2.Title}}</span>
+                                                                        </label>
+                                                                        {{end}}
+                                                                     
+                                                                    </ol>
+                                                                    {{end}}
+                                                                </li>
+                                                            </ol>
+                                                            {{end}}
+                                                            {{end}}
+                                                        </li>
+                                                    </ol>
+                                                    {{end}}
+                                                   
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class='col-xs-6 col-sm-6 pricing-box'>
+                                    <div class="widget-box widget-color-dark">
+                                        <div class="widget-header">
+                                        <h5 class="widget-title bigger lighter">分类权限</h5></div>
+                                        <div class="widget-body">
+                                            <div class="widget-main">
+                                                <div class="">
+                                                    {{range $k,$v := .categoryprivileges}}
+                                                    <ol class="dd-list">
+                                                        <li class="dd-item" data-id="-{{$v.Id}}">
+                                                            <div class="dd-handle" for="selects-{{$v.Id}}">
+                                                                <label>
+                                                                    <input type="checkbox" {{if $v.Check}}checked{{end}} data-class='first-{{$v.Id}}' class="ace one-checkbox" data-level='1' value='{{$v.Id}}' name="category_ids">
+                                                                    <span class="lbl">{{$v.Title}}</span>
+                                                                </label>
+                                                            </div>
+                                                            {{if $v.Son}}
+                                                            {{range $k1,$v1 := $v.Son}}
+                                                            <ol class="dd-list">
+                                                                <li class="dd-item" data-id="{{$v1.Id}}">
+                                                                    <div class="dd-handle">
+                                                                        <label>
+                                                                            <input {{if $v1.Check}}checked{{end}} name="category_ids" data-class='second-{{$v1.Id}}'  data-level='2' type="checkbox" class="ace first-{{$v.Id}} second-checkbox" value='{{$v1.Id}}'>
+                                                                            <span class="lbl">{{$v1.Title}}</span>
+                                                                        </label>
+                                                                    </div>
+                                                                </li>
+                                                            </ol>
+                                                            {{end}}
+                                                            {{end}}
+                                                        </li>
+                                                    </ol>
+                                                    {{end}}
+                                                   
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.row -->
+                            <div class="clearfix form-actions">
+                                <div class="col-md-offset-3 col-md-9">
+                                    <input type="hidden" id="" errormsg="用户不存在" nullmsg="用户不存在" value="{{.info.Id}}" datatype="n" name="id">
+                                    <button class="btn btn-info" type="submit">
+                                        <i class="ace-icon fa fa-check bigger-110"></i>提交</button>&nbsp; &nbsp; &nbsp;
+                                    <button class="btn" type="button" onclick="window.history.back();">
+                                        <i class="ace-icon fa fa-undo bigger-110"></i>返回</button>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- PAGE CONTENT ENDS -->
+                    </div>
+                </div>
+                <style type="text/css">
+                    .dd-handle, .dd2-content{    min-height: 36px;margin: 2px 0;    padding: 5px 12px;}
+                </style>
+            </div><!-- /.main-content -->
+
+            {{template "admin/common/footer.html" .}}
+        </div><!-- /.main-container -->
+
+        <!-- basic scripts -->
+
+        <!--[if !IE]> -->
+        <script src="/static/assets/js/jquery-2.1.4.min.js"></script>
+
+        <!-- <![endif]-->
+
+        <!--[if IE]>
+<script src="/static/assets/js/jquery-1.11.3.min.js"></script>
+<![endif]-->
+
+           {{template "admin/common/js.html" .}}
+
+        <script type="text/javascript">
+            if('ontouchstart' in document.documentElement) document.write("<script src='/static/assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+        </script>
+        <script src="/static/assets/js/bootstrap.min.js"></script>
+
+        <!-- page specific plugin scripts -->
+
+
+        <!-- ace scripts -->
+        <script src="/static/assets/js/ace-elements.min.js"></script>
+        <script src="/static/assets/js/ace.min.js"></script>
+
+        <!-- inline scripts related to this page -->
+        <script type="text/javascript">
+            var url = window.location.href;
+            submitForm($('#form'),url);
+            jQuery(function($){
+            
+                //$('.dd').nestable();
+                
+
+            
+                $(".allcheck").click(function(){
+                    $(".ace").each(function(){
+                        $(this).prop('checked',true);
+                    })
+                })
+                 $(".nocheck").click(function(){
+                    $(".ace").each(function(){
+                        $(this).prop('checked',false);
+                    })
+                });
+
+                 $(".ace").click(function(){
+                    var classes = $(this).attr('data-class');
+                    var check = $(this).is(':checked');
+                    $("."+classes).each(function(){
+                        $(this).prop('checked',check);
+                    })
+                 });
+
+                 $(".second-checkbox").click(function(){
+                    if($(this).is(':checked') == true){
+                        $(this).parent().parent().parent().parent().parent().find('.one-checkbox').prop('checked',true);
+                    }
+                 })
+
+                 $(".select-checkbox").click(function(){
+                    if($(this).is(':checked') == true){
+                        $(this).parent().parent().parent().find('.second-checkbox').prop('checked',true);
+                        $(this).parent().parent().parent().parent().parent().find('.one-checkbox').prop('checked',true);
+                    }
+                 })
+            });
+        </script>
+    </body>
+</html>

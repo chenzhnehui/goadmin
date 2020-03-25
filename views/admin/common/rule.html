@@ -1,0 +1,90 @@
+
+
+		<div class="row" id="icons" hidden>
+			<div class="col-xs-12">
+				<h3 class="header smaller lighter blue">
+					查看验证规则
+				</h3>
+			</div>
+			<div class="col-xs-12">
+				<ul class="list-unstyled">
+					<li>
+						Required      &emsp;&emsp; 验证值输入不为空
+					</li>
+
+					<li>
+						Min|min  &emsp;&emsp;   验证输入值不能小于min
+					</li>
+					<li>
+						Max|max     &emsp;&emsp;  验证输入值不能大于max
+					</li>					
+					<li>
+						Range|min|max    &emsp;&emsp;  验证输入值数值的范围，是否在mil-max区间
+					</li>					
+					<li>
+						MinSize|min      &emsp;&emsp; 验证输入值最小长度
+					</li>					
+					<li>
+						MaxSize|max   &emsp;&emsp;   验证输入值最大长度
+					</li>					
+					<li>
+						Length|length     &emsp;&emsp;     验证输入值指定长度
+					</li>					
+					<li>
+						Alpha          &emsp;&emsp;   验证输入值是否是alpha字符
+					</li>					
+					<li>
+						Numeric    &emsp;&emsp;     验证输入值是否是数字
+					</li>					
+					<li>
+						AlphaNumeric &emsp;&emsp;  验证输入值是否是 字符或数字
+					</li>					
+					<li>
+						Match|string    &emsp;&emsp;  验证输入值是否能正则匹配 string是正则表达式字符串
+					</li>					
+					<li>
+						NoMatch|string   &emsp;&emsp;   验证输入值是否不能正则匹配 string是正则表达式字符串
+					</li>					
+					<li>
+						AlphaDash        &emsp;&emsp;  验证输入值是否是字符或数字或横杠 -_
+					</li>					
+					<li>
+						IP        &emsp;&emsp;   验证输入值是否是IP 格式，目前只支持 IPv4 格式验证
+					</li>
+					<li>
+						Base64    &emsp;&emsp;       验证输入值是否是base64 编码
+					</li>
+					<li>
+						Mobile      &emsp;&emsp; 验证输入值是否是手机号
+					</li>
+					<li>
+						Tel      &emsp;&emsp;    验证输入值是否是固定电话号
+					</li>
+					<li>
+						Phone   &emsp;&emsp; 验证输入值是否是手机号或固定电话号
+					</li>
+					<li>
+						ZipCode &emsp;&emsp;   验证输入值是否是邮政编码
+					</li>
+
+				</ul>
+			</div>
+
+		</div>
+		<script src="/static/assets/js/bootbox.js"></script>
+		<script type="text/javascript">
+			$("#bootbox-options").on(ace.click_event, function() {
+				bootbox.dialog({
+					message: $("#icons").html(),
+					buttons:
+					{
+						"button" :
+						{
+							"label" : " &emsp;关闭 &emsp;",
+							"className" : "btn-sm"
+						}
+					}
+				});
+			});
+			
+		</script>

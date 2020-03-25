@@ -1,0 +1,49 @@
+	<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+		<ul class="breadcrumb">
+			<li>
+				<i class="ace-icon fa fa-home home-icon"></i>
+				<a href="/">主页</a>
+			</li>
+			{{range $k,$v := .menu_groups_list}}
+				{{if $v.Son}}
+						{{range $k1,$v1 := $v.Son}}
+							{{if eq $v1.Active "active"}}
+								<li>
+									<a href="{{$v1.Url}}" class="active">{{$v1.Title}}</a>
+								</li>
+							{{end}}
+							{{if eq $v1.Active "active open"}}
+								<li>
+									<a href="#" class="active">{{$v1.Title}}</a>
+								</li>
+							{{end}}
+
+							{{if $v1.Son}}
+								{{range $k2,$v2 := $v1.Son}}
+									{{if eq $v2.Active "active"}}
+										<li>
+											<a href="{{$v2.Url}}" class="active">{{$v2.Title}}</a>
+										</li>
+									{{end}}
+									{{if eq $v2.Active "active open"}}
+										<li>
+											<a href="#" class="active">{{$v2.Title}}</a>
+										</li>
+									{{end}}
+									{{if $v2.Sonmenu}}
+										<li class="active">{{$v2.Sonmenu}}</li>
+									{{end}}
+
+								{{end}}
+							{{else}}
+								{{if $v1.Sonmenu}}
+									<li class="active">{{$v1.Sonmenu}}</li>
+								{{end}}
+							{{end}}
+						{{end}}
+				{{end}}
+
+			{{end}}
+
+		</ul><!-- /.breadcrumb -->
+	</div>

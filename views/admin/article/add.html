@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>{{template "admin/common/head.html" .}}	</head>
+<body class="{{.ACE_SIKN}}">
+{{template "admin/common/navbar.html" .}}
+<div class="main-container ace-save-state" id="main-container">
+    <script type="text/javascript">
+        try{ace.settings.loadState('main-container')}catch(e){}
+    </script>
+    <!-- basic scripts -->
+
+    <!--[if !IE]> -->
+    <script src="/static/assets/js/jquery-2.1.4.min.js"></script>
+
+    <!-- <![endif]-->
+
+    <!--[if IE]>
+    <script src="/static/assets/js/jquery-1.11.3.min.js"></script>
+    <![endif]-->
+    {{template "admin/common/js.html" .}}
+
+    <script type="text/javascript" src="/static/upjs/webuploader.js"></script>
+    <script type="text/javascript" src="/static/upjs/UploadPreview.js"></script>
+    <script charset="utf-8" src="/static/kindeditor/kindeditor.js"></script>
+
+    <script type="text/javascript">
+        if('ontouchstart' in document.documentElement) document.write("<script src='/static/assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+    </script>
+    <script src="/static/assets/js/bootstrap.min.js"></script>
+    <style type="text/css">.checkbox label, .radio label{padding-left: 10px;}
+    .pics-show{width:67px;height:54px;float:left;margin-right:40px;position: relative;} 
+    .pics-show-span{position: relative;    display: inline-block;}
+    .pics-show-del{position: absolute;top: -10px;left: 67px;cursor: pointer;} 
+    .btn-group-sm>.btn, .btn-sm{border-width: 3px;font-size:1px;padding: 4px 9px;}
+ </style>
+
+    {{template "admin/common/sidebar.html" .}}
+    <div class="main-content">
+        <div class="main-content-inner">
+
+            {{template "admin/common/breadcrumbs.html" .}}
+
+            <div class="page-content">
+
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-xs-12">
+                        <form class="form-horizontal" method="post" id="form">
+                            <div class="tabbable">
+                                <!-- #section:pages/faq -->
+                                 {{range $k,$v := (AnalysisStr .info.FieldGroup ",")}}
+                                        {{if gt $v.len 1}} {{if Equal $k 0}}
+                                            <ul class="nav nav-tabs padding-18 tab-size-bigger" id="myTab">
+                                        {{end}} {{end}}
+                                 {{end}}
+                                    {{range $k,$v := (AnalysisStr .info.FieldGroup ",")}}
+                                        {{if gt $v.len 1}}
+                                            <li class="{{if Equal $k 0}}active{{end}}">
+                                                <a data-toggle="tab" href="#faq-tab-{{$k}}">
+                                                    {{if Equal $k 0}} <i class="blue ace-icon fa fa-credit-card bigger-120"></i>
+                                                    {{else if Equal $k 1}} <i class="green ace-icon fa fa-envelope bigger-120"></i>
+                                                    {{else if Equal $k 2}}<i class="orange ace-icon fa fa-picture-o bigger-120"></i>
+                                                    {{else if Equal $k 3}}<i class="pink  ace-icon fa fa-inbox bigger-120"></i>
+                                                    {{else}}<i class="purple  ace-icon fa fa-lemon-o bigger-120"></i>
+                                                    {{end}}
+                                                   {{$v.val}}
+                                                </a>
+                                            </li>
+                                        {{end}}
+                                    {{end}}
+
+                                 {{range $k,$v := (AnalysisStr .info.FieldGroup ",")}}
+                                        {{if gt $v.len 1}} {{if Equal $k 0}} </ul> {{end}}{{end}}
+                                 {{end}}
+                                <div class="tab-content no-border padding-24">
+                                     {{range $k,$v := (AnalysisStr .info.FieldGroup ",")}}
+                                        {{if $v}}
+                                            <div id="faq-tab-{{$k}}" class="tab-pane fade {{if Equal $k 0}}in active{{end}}">
+                                                {{range $k1,$v1 := (GetFeildSort $.info.Id $v.key)}}
+                                                    <!--  1字符 2数字 3文本 4单选 5复选 6select 7富文本 8图片 9文件 10数组,11多图 12:"日期",13:"时间-->
+                                                        {{if Equal 1 $v1.Type}}
+                                                        <div class="form-group">
+                                                            <label class="col-xs-1 control-label no-padding-right"> {{$v1.Title}} </label>
+                                                            <div class="col-xs-11">
+                                                                <input type="text" value="{{$v1.Value}}" name="{{$v1.Name}}"  placeholder="{{$v1.Remark}}" {{if $v1.Need}}datatype="*" {{end}}errormsg="{{$v1.Title}}数据必需" nullmsg="{{$v1.Title}}数据必需"  class="form-control" />
+                                                            </div>
+                                                        </div>
+                                                        {{end}}
+                                                        {{if Equal 2 $v1.Type}}
+                                                            <div class="form-group">
+                                                                <label class="col-xs-1 control-label no-padding-right"> {{$v1.Title}} </label>
+                                                                <div class="col-xs-11">
+                                                                    <input type="number" value="{{$v1.Value}}" name="{{$v1.Name}}"  placeholder="{{$v1.Remark}}" {{if $v1.Need}}datatype="*" {{end}}errormsg="{{$v1.Title}}数据必需" nullmsg="{{$v1.Title}}数据必需"  class="form-control" />
+                                                                </div>
+                                                            </div>
+                                                        {{end}}
+                                                        {{if Equal 3 $v1.Type}}
+                                                            <div class="form-group">
+                                                                <label class="col-xs-1 control-label no-padding-right"> {{$v1.Title}} </label>
+                                                                <div class="col-xs-11">                                             
+                                                                    <textarea  class="form-control" rows="5" placeholder="{{$v1.Remark}}" name="{{$v1.Name}}" {{if $v1.Need}}datatype="*" {{end}}errormsg="{{$v1.Title}}数据必需" nullmsg="{{$v1.Title}}数据必需">{{$v1.Value}}</textarea>
+                                                                </div>
+                                                            </div>
+                                                        {{end}}
+                                                        {{if Equal 4 $v1.Type}}
+                                                            <div class="form-group">
+                                                                <label class="col-xs-1 control-label no-padding-right"> {{$v1.Title}} </label>
+                                                                <div class="col-xs-11">  
+                                                                <div class="radio">
+                                                                {{range $k2,$v2 := (GetAttributeByName $v1.Name $.category_id "Extra")}}
+                                                                    <label> <input type="radio" value="{{$k2}}" {{if Equal $k2 $v1.Value}}checked{{end}}  class="ace" name="{{$v1.Name}}">  <span class="lbl">{{$v2}}</span> </label>&emsp;
+                                                                {{end}}
+                                                                 </div>
+                                                                </div>
+                                                            </div>
+                                                        {{end}}
+                                                        {{if Equal 5 $v1.Type}}
+                                                            <div class="form-group">
+                                                                <label class="col-xs-1 control-label no-padding-right"> {{$v1.Title}} </label>
+                                                                <div class="col-xs-11">  
+                                                                <div class="checkbox">
+                                                                {{range $k2,$v2 := (GetAttributeByName $v1.Name $.category_id "Extra")}}
+                                                                    <label> <input type="checkbox" value="{{$k2}}" {{if InString $k2 $v1.Value}}checked{{end}}  class="ace" name="{{$v1.Name}}">  <span class="lbl">{{$v2}}</span> </label>&emsp;
+                                                                {{end}}
+                                                                 </div>
+                                                                </div>
+                                                            </div>
+                                                        {{end}}
+
+                                                        {{if Equal 6 $v1.Type}}
+                                                            <div class="form-group">
+                                                                <label class="col-xs-1 control-label no-padding-right"> {{$v1.Title}}</label>
+                                                                <div class="col-xs-11">
+                                                                    <select class="form-control" name="{{$v1.Name}}" placeholder="{{$v1.Remark}}" {{if $v1.Need}}datatype="*" {{end}}errormsg="{{$v1.Title}}数据必需" nullmsg="{{$v1.Title}}数据必需">
+                                                                        {{range $k2,$v2 := (GetAttributeByName $v1.Name $.category_id "Extra")}}
+                                                                            <option value="{{$k2}}" {{if Equal $k2 $v1.Value}}selected{{end}} >{{$v2}}</option>
+                                                                        {{end}}
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        {{end}}
+                                                        {{if Equal 7 $v1.Type}} <!-- 富文本-->
+                                                            <div class="form-group">
+                                                                <label class="col-xs-1 control-label no-padding-right"> {{$v1.Title}} </label>
+                                                                <div class="col-xs-11">
+                                                                    <textarea style="width:100%;height:400px;" class="form-control"  name="{{$v1.Name}}" placeholder="{{$v1.Remark}}" {{if $v1.Need}}datatype="*" {{end}}errormsg="{{$v1.Title}}数据必需" nullmsg="{{$v1.Title}}数据必需">{{$v1.Value}}</textarea>
+                                                                </div>
+                                                            </div>
+                                                            <script>
+                                                                KindEditor.ready(function (K) {
+                                                                    window.editor = K.create('textarea[name="{{$v1.Name}}"]', {
+                                                                            uploadJson : '/admin/file/upload',
+                                                                            fileManagerJson : '/admin/file/upload',
+                                                                            allowFileManager : false,
+                                                                            afterBlur: function () { this.sync(); },
+                                                                            afterChange: function () {  this.sync(); },
+                                                                            afterCreate: function () {
+                                                                                var self = this;
+                                                                                K.ctrl(document, 13, function () {
+                                                                                    self.sync();
+                                                                                    K('form[name=myform]')[0].submit();
+                                                                                });
+                                                                                K.ctrl(self.edit.doc, 13, function () {
+                                                                                    self.sync();
+                                                                                    K('form[name=myform]')[0].submit();
+                                                                                });
+                                                                            }
+                                                                    });
+                                                                });
+                                                            </script>
+                                                        {{end}}
+
+                                                        {{if Equal 8 $v1.Type}} <!-- 图片-->
+
+                                                            <div class="form-group">
+                                                                <label class="col-xs-1 control-label no-padding-right"> {{$v1.Title}}</label>
+                                                                <div class="col-xs-11">
+                                                                   <div class="dz-default dz-message">
+                                                                    <label>
+                                                                        <span class="bigger-150 bolder" style="cursor: pointer;">
+                                                                            <i class="upload-icon ace-icon fa fa-cloud-upload blue fa-3x"></i>
+                                                                        </span>
+                                                                         <span id="upload_picture_{{$v1.Name}}" hidden></span>
+                                                                    </label>
+
+                                                                    <span class="pics-show-span" style="margin-left: 20px;" id="upload_picture_img_{{$v1.Name}}">
+                                                                        {{if $v1.Value}}<a href="{{$v1.Value}}" target="_blank"><img class="pics-show" src="{{$v1.Value}}"/></a>{{end}}
+                                                                    </span>    
+
+                                                                    <input type="hidden"  id="upload_picture_val_{{$v1.Name}}" value="{{$v1.Value}}" name="{{$v1.Name}}"  placeholder="{{$v1.Remark}}" {{if $v1.Need}}datatype="*" {{end}}errormsg="{{$v1.Title}}数据必需" nullmsg="{{$v1.Title}}数据必需"  class="form-control" />
+                                                                   </div>
+                                                                </div>
+                                                               
+                                                            </div>
+                                                                <script>
+                                                                    var uploadPreview =new UploadPreview({
+                                                                        url: "/admin/file/upload",
+                                                                        swf: '/static/upjs/Uploader.swf',
+                                                                        fileVal: 'imgFile',
+                                                                        auto: true,
+                                                                        previewInfo: {
+                                                                            previewWrap: ".dz-default dz-message",
+                                                                            toolBtnShowOnUpload: true
+                                                                        },
+                                                                        btns: {
+                                                                            chooseBtn: "#upload_picture_{{$v1.Name}}",
+                                                                            chooseBtnText: "上传图片",
+                                                                        },
+                                                                        accept: {
+                                                                           title: 'Images',
+                                                                           extensions: 'gif,jpg,jpeg,bmp,png',
+                                                                           mimeTypes: '*'
+                                                                        },
+                                                                        maxFileNum: 1000, // 上传数量必须设置为1
+                                                                        uploadError: function (file,reason){
+                                                                            console.log('上传失败代码：' + reason);
+                                                                        },
+                                                                        uploadSuccess: function (file,data){
+                                                                            //这里的上传成功指的是上传请求发送成功，图片是否真正上传到服务还得根据服务器返回的数据(response)来判断
+                                                                            var src = '';
+                                                                            if(data.code){
+                                                                                $("#upload_picture_val_{{$v1.Name}}").val(data.url);
+                                                                                $("#upload_picture_img_{{$v1.Name}}").html(
+                                                                                    '<a href="'+data.url+'" target="_blank"><img class="pics-show" src="' + data.url + '"/></a>'
+                                                                                );
+                                                                            } else {
+                                                                                alert(data.msg);
+                                                                            }
+                                                                          
+                                                                        },
+                                                                        onDel: function (file){
+                                                                            alert("用户删除了预览图！");
+                                                                        },
+                                                                        onDelUploaded: function (fileid, done) {
+                                                                            console.log(fileid);
+                                                                        }
+                                                                    });
+                                                                  
+                                                                </script>
+
+                                                         
+                                                        {{end}}
+
+                                                        {{if Equal 9 $v1.Type}} <!-- 文件-->
+
+                                                            <div class="form-group">
+                                                                <label class="col-xs-1 control-label no-padding-right"> {{$v1.Title}}</label>
+                                                                <div class="col-xs-11">
+                                                                    <label class="ace-file-input inline" style="width: 100%">
+                                                                        <span id="upload_file_{{$v1.Name}}" hidden></span>
+                                                                        <span class="ace-file-container" data-title="选择文件上传">
+                                                                            <span class="ace-file-name" id="upload_file_name_{{$v1.Name}}" data-title='{{if $v1.Value}}{{JsonDecode $v1.Value "name"}}{{else}}暂无文件...{{end}}'>
+                                                                                <i class=" ace-icon fa fa-upload"></i>
+                                                                            </span>
+                                                                        </span>
+                                                                        <a class="remove" href="#">
+                                                                            <i class=" ace-icon fa fa-times"></i>
+                                                                        </a>
+
+                                                                         <span id="upload_file_download_{{$v1.Name}}">
+
+                                                                          {{if $v1.Value}}
+                                                                          &emsp;<a style="float: right;" href='{{JsonDecode $v1.Value "url"}}' target="_blank" class="btn btn-sm btn-success">&emsp;文件查看&emsp;</a>
+                                                                         {{else}}
+                                                                         &emsp;<a style="float: right;" href="#" class="btn btn-sm ">&emsp;暂无文件&emsp;</a>
+                                                                         {{end}}
+                                                                         </span>
+
+
+                                                                    </label>
+                                                                      <input type="hidden"  id="upload_file_val_{{$v1.Name}}" value="{{$v1.Value}}" name="{{$v1.Name}}"  placeholder="{{$v1.Remark}}" {{if $v1.Need}}datatype="*" {{end}}errormsg="{{$v1.Title}}数据必需" nullmsg="{{$v1.Title}}数据必需"  class="form-control" />
+                                                                </div>
+                                                            
+                                                            </div>
+                                                                <script>
+                                                                    var uploadPreview =new UploadPreview({
+                                                                        url: "/admin/file/upload",
+                                                                        swf: '/static/upjs/Uploader.swf',
+                                                                        fileVal: 'imgFile',
+                                                                        auto: true,
+                                                                        previewInfo: {
+                                                                            previewWrap: "#upload_file_{{$v1.Name}}",
+                                                                            toolBtnShowOnUpload: true
+                                                                        },
+                                                                        btns: {
+                                                                            chooseBtn: "#upload_file_{{$v1.Name}}",
+                                                                            chooseBtnText: "上传文件",
+                                                                        },
+                                                                        accept: {
+                                                                           title: 'FILES',
+                                                                           extensions: '*',
+                                                                           mimeTypes: '*'
+                                                                        },
+                                                                        maxFileNum: 1000, // 上传数量必须设置为1
+                                                                        uploadError: function (file,reason){
+                                                                            console.log('上传失败代码：' + reason);
+                                                                        },
+                                                                        uploadSuccess: function (file,data){
+                                                                            //这里的上传成功指的是上传请求发送成功，图片是否真正上传到服务还得根据服务器返回的数据(response)来判断
+                                                                            var src = '';
+                                                                            if(data.code){
+                                                                                objs = {name:data.name,url:data.url,size:data.size}
+                                                                                $("#upload_file_val_{{$v1.Name}}").val(JSON.stringify(objs));
+                                                                                $("#upload_file_name_{{$v1.Name}}").attr('data-title',data.name);
+                                                                                $("#upload_file_download_{{$v1.Name}}").html('&emsp;<a href='+data.url+' target="_blank" class="btn btn-sm btn-success" style="float: right;">&emsp;文件查看&emsp;</a>')
+                                                                            } else {
+                                                                                alert(data.msg);
+                                                                            }
+                                                                          
+                                                                        },
+                                                                        onDel: function (file){
+                                                                            alert("用户删除了！");
+                                                                        },
+                                                                        onDelUploaded: function (fileid, done) {
+                                                                            console.log(fileid);
+                                                                        }
+                                                                    });
+                                                                  
+                                                                </script>
+                                                        {{end}}
+                                                        {{if Equal 10 $v1.Type}}
+                                                            <div class="form-group">
+                                                                <label class="col-xs-1 control-label no-padding-right"> {{$v1.Title}} </label>
+                                                                <div class="col-xs-11">                                             
+                                                                    <textarea  class="form-control" rows="5" placeholder="请填写{{$v1.Remark}}" name="{{$v1.Name}}" {{if $v1.Need}}datatype="*" {{end}}errormsg="{{$v1.Title}}数据必需" nullmsg="{{$v1.Title}}数据必需">{{$v1.Value}}</textarea>
+                                                                </div>
+                                                            </div>
+                                                        {{end}}
+
+                                                        {{if Equal 11 $v1.Type}} <!-- 多图片-->
+
+                                                            <div class="form-group">
+                                                                <label class="col-xs-1 control-label no-padding-right"> {{$v1.Title}}</label>
+                                                                <div class="col-xs-11">
+                                                                   <div class="dz-default dz-message">
+                                                                    <label>
+                                                                        <span class="bigger-150 bolder" style="cursor: pointer;">
+                                                                            <i class="upload-icon ace-icon fa fa-cloud-upload purple fa-3x"></i>
+                                                                        </span>
+                                                                         <span id="upload_more_picture_{{$v1.Name}}" hidden></span>
+                                                                    </label>
+
+                                                                      <span class="bigger-150 bolder" id="upload_more_picture_img_{{$v1.Name}}" style="margin-left: 20px;">
+                                                                        
+                                                                          {{if $v1.Value}}
+                                                                               {{range $k2,$v2 := (StrToArray $v1.Value ",")}}
+                                                                                    <span class="pics-show-span">
+                                                                                        <a href="{{$v2}}" target="_blank"><img class="pics-show" src="{{$v2}}"></a>
+                                                                                        <div class="ace-icon fa fa-times pics-show-del"></div>
+                                                                                    </span>   
+                                                                               {{end}}
+                                                                          {{end}}
+                                                                       </span>
+                                                                        <input type="hidden"  id="upload_more_picture_val_{{$v1.Name}}" value="{{$v1.Value}}" name="{{$v1.Name}}"  placeholder="{{$v1.Remark}}" {{if $v1.Need}}datatype="*" {{end}}errormsg="{{$v1.Title}}数据必需" nullmsg="{{$v1.Title}}数据必需"  class="form-control" />
+                                                                   </div>
+                                                                </div>
+                                                               
+                                                            </div>
+                                                                <script>
+                                                                    var uploadPreview =new UploadPreview({
+                                                                        url: "/admin/file/upload",
+                                                                        swf: '/static/upjs/Uploader.swf',
+                                                                        fileVal: 'imgFile',
+                                                                        auto: true,
+                                                                        previewInfo: {
+                                                                            previewWrap: ".dz-default dz-message",
+                                                                            toolBtnShowOnUpload: true
+                                                                        },
+                                                                        btns: {
+                                                                            chooseBtn: "#upload_more_picture_{{$v1.Name}}",
+                                                                            chooseBtnText: "上传多图片",
+                                                                        },
+                                                                        accept: {
+                                                                           title: 'Images',
+                                                                           extensions: 'gif,jpg,jpeg,bmp,png',
+                                                                           mimeTypes: '*'
+                                                                        },
+                                                                        maxFileNum: 1000, // 上传数量必须设置为1
+                                                                        uploadError: function (file,reason){
+                                                                            console.log('上传失败代码：' + reason);
+                                                                        },
+                                                                        uploadSuccess: function (file,data){
+                                                                            //这里的上传成功指的是上传请求发送成功，图片是否真正上传到服务还得根据服务器返回的数据(response)来判断
+                                                                            var src = '';
+                                                                            if(data.code){
+                                                                                val = $("#upload_more_picture_val_{{$v1.Name}}").val();
+                                                                                if(val == ""){
+                                                                                    $("#upload_more_picture_val_{{$v1.Name}}").val(data.url);
+                                                                                }else{
+                                                                                    $("#upload_more_picture_val_{{$v1.Name}}").val(val+","+data.url);
+                                                                                }
+                                                                                $("#upload_more_picture_img_{{$v1.Name}}").append(
+                                                                                    '<span class="pics-show-span"><a href="'+data.url+'" target="_blank"><img class="pics-show" src="' + data.url + '"/></a> <div class="ace-icon fa fa-times pics-show-del"></div> </span> '
+                                                                                );
+                                                                            } else {
+                                                                                alert(data.msg);
+                                                                            }
+                                                                          
+                                                                        },
+                                                                        onDel: function (file){
+                                                                            alert("用户删除了预览图！");
+                                                                        },
+                                                                        onDelUploaded: function (fileid, done) {
+                                                                            console.log(fileid);
+                                                                        }
+                                                                    });
+                                                                    $('body').on('click','.pics-show-del',function(){
+                                                                        var urls = $(this).prev("a").attr("href")
+                                                                        val = $("#upload_more_picture_val_{{$v1.Name}}").val();
+                                                                        vals = val.split(",")
+                                                                        var valArr = new Array();
+                                                                        for (var i = 0; i < vals.length; i++) {
+                                                                            if(vals[i] != urls){
+                                                                                valArr.push(vals[i])
+                                                                            }
+                                                                        }
+                                                                        $("#upload_more_picture_val_{{$v1.Name}}").val(valArr.join(","));
+                                                                        $(this).parent().remove()
+                                                                    });
+                                                                  
+                                                                </script>
+
+                                                         
+                                                        {{end}}
+                                                        {{if Equal 12 $v1.Type}}
+                                                        <div class="form-group">
+                                                            <label class="col-xs-1 control-label no-padding-right"> {{$v1.Title}} </label>
+                                                            <div class="col-xs-11">
+                                                                <div class="input-group">
+                                                                     <input type="text" value="{{$v1.Value}}" name="{{$v1.Name}}"  placeholder="{{$v1.Remark}}" {{if $v1.Need}}datatype="*" {{end}}errormsg="{{$v1.Title}}数据必需" nullmsg="{{$v1.Title}}数据必需"  class="form-control date-picker" data-date-format="yyyy-mm-dd"/>
+                                                                    <span class="input-group-addon">
+                                                                        <i class="fa fa-calendar bigger-110"></i>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {{end}}
+                                                        {{if Equal 13 $v1.Type}}
+                                                        <div class="form-group">
+                                                            <label class="col-xs-1 control-label no-padding-right"> {{$v1.Title}} </label>
+                                                            <div class="col-xs-11">
+                                                                <div class="input-group">
+                                                                     <input type="text" value="{{$v1.Value}}" name="{{$v1.Name}}"  placeholder="{{$v1.Remark}}" {{if $v1.Need}}datatype="*" {{end}}errormsg="{{$v1.Title}}数据必需" nullmsg="{{$v1.Title}}数据必需"  class="form-control date-time"/>
+                                                                    <span class="input-group-addon">
+                                                                        <i class="fa fa-calendar bigger-110"></i>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div> 
+                                                        {{end}}
+
+                                                        {{if Equal 14 $v1.Type}} <!--时间-->
+                                                        <div class="form-group">
+                                                            <label class="col-xs-1 control-label no-padding-right"> {{$v1.Title}} </label>
+                                                            <div class="col-xs-11">
+                                                                <div class="input-group">
+                                                                     <input type="text" value="{{$v1.Value}}" name="{{$v1.Name}}"  placeholder="{{$v1.Remark}}" {{if $v1.Need}}datatype="*" {{end}}errormsg="{{$v1.Title}}数据必需" nullmsg="{{$v1.Title}}数据必需"  class="form-control timepicker-time"/>
+                                                                    <span class="input-group-addon">
+                                                                        <i class="fa fa-clock-o bigger-110"></i>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {{end}}
+                                                        {{if Equal 15 $v1.Type}} <!--颜色-->
+                                                        <div class="form-group">
+                                                            <label class="col-xs-1 control-label no-padding-right"> {{$v1.Title}} </label>
+                                                            <div class="col-xs-11">
+                                                                <div class="input-group">
+                                                                     <input type="text" value="{{$v1.Value}}" name="{{$v1.Name}}"  placeholder="{{$v1.Remark}}" {{if $v1.Need}}datatype="*" {{end}}errormsg="{{$v1.Title}}数据必需" nullmsg="{{$v1.Title}}数据必需"  class="form-control colorpicker"/>
+                                                                    <span class="input-group-addon">
+                                                                        <i class="fa fa-clock-o bigger-110"></i>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {{end}}
+                                                {{end}}
+                                            </div>
+                                        {{end}}
+                                    {{end}}
+                                </div>
+                            </div>
+
+
+
+                            <div class="clearfix form-actions">
+                                <div class="col-md-offset-3 col-md-9">
+                                    <button class="btn btn-info" type="submit">
+                                        <i class="ace-icon fa fa-check bigger-110"></i>
+                                        提交
+                                    </button>
+
+                                    <input type="hidden" value="{{.category_id}}" name="category_id">
+
+                                    &nbsp; &nbsp; &nbsp;
+                                    <button class="btn" type="button" onclick="javascript:history.back()">
+                                        <i class="ace-icon fa fa-undo bigger-110"></i>
+                                        返回
+                                    </button>
+                                </div>
+                            </div>
+
+
+                        </form>
+
+
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- /.page-content -->
+        </div>
+    </div><!-- /.main-content -->
+
+    {{template "admin/common/footer.html" .}}
+
+</div><!-- /.main-container -->
+
+<link rel="stylesheet" href="/static/assets/css/bootstrap-datepicker3.min.css" />
+<link rel="stylesheet" href="/static/assets/css/bootstrap-timepicker.min.css" />
+<link rel="stylesheet" href="/static/assets/css/daterangepicker.min.css" />
+<link rel="stylesheet" href="/static/assets/css/bootstrap-datetimepicker.min.css" />
+<link rel="stylesheet" href="/static/assets/css/bootstrap-colorpicker.min.css" />
+
+
+<!-- page specific plugin scripts -->
+
+<!--[if lte IE 8]>
+<script src="/static/assets/js/excanvas.min.js"></script>
+<![endif]-->
+
+<script src="/static/assets/js/jquery-ui.custom.min.js"></script>
+<script src="/static/assets/js/jquery.ui.touch-punch.min.js"></script>
+<script src="/static/assets/js/chosen.jquery.min.js"></script>
+<script src="/static/assets/js/spinbox.min.js"></script>
+<script src="/static/assets/js/bootstrap-datepicker.min.js"></script>
+<script src="/static/assets/js/bootstrap-timepicker.min.js"></script>
+<script src="/static/assets/js/moment.min.js"></script>
+<script src="/static/assets/js/daterangepicker.min.js"></script>
+<script src="/static/assets/js/bootstrap-datetimepicker.min.js"></script>
+<script src="/static/assets/js/bootstrap-colorpicker.min.js"></script>
+<script src="/static/assets/js/jquery.knob.min.js"></script>
+<script src="/static/assets/js/autosize.min.js"></script>
+<script src="/static/assets/js/jquery.inputlimiter.min.js"></script>
+<script src="/static/assets/js/jquery.maskedinput.min.js"></script>
+<script src="/static/assets/js/bootstrap-tag.min.js"></script>
+
+<!-- ace scripts -->
+<script src="/static/assets/js/ace-elements.min.js"></script>
+<script src="/static/assets/js/ace.min.js"></script>
+
+<!-- inline scripts related to this page -->
+<script type="text/javascript">
+    jQuery(function($) {
+        $('#id-disable-check').on('click', function() {
+            var inp = $('#form-input-readonly').get(0);
+            if(inp.hasAttribute('disabled')) {
+                inp.setAttribute('readonly' , 'true');
+                inp.removeAttribute('disabled');
+                inp.value="This text field is readonly!";
+            }
+            else {
+                inp.setAttribute('disabled' , 'disabled');
+                inp.removeAttribute('readonly');
+                inp.value="This text field is disabled!";
+            }
+        });
+
+
+        if(!ace.vars['touch']) {
+            $('.chosen-select').chosen({allow_single_deselect:true});
+            //resize the chosen on window resize
+
+            $(window)
+                .off('resize.chosen')
+                .on('resize.chosen', function() {
+                    $('.chosen-select').each(function() {
+                        var $this = $(this);
+                        $this.next().css({'width': $this.parent().width()});
+                    })
+                }).trigger('resize.chosen');
+            //resize chosen on sidebar collapse/expand
+            $(document).on('settings.ace.chosen', function(e, event_name, event_val) {
+                if(event_name != 'sidebar_collapsed') return;
+                $('.chosen-select').each(function() {
+                    var $this = $(this);
+                    $this.next().css({'width': $this.parent().width()});
+                })
+            });
+
+
+            $('#chosen-multiple-style .btn').on('click', function(e){
+                var target = $(this).find('input[type=radio]');
+                var which = parseInt(target.val());
+                if(which == 2) $('#form-field-select-4').addClass('tag-input-style');
+                else $('#form-field-select-4').removeClass('tag-input-style');
+            });
+        }
+
+
+        $('[data-rel=tooltip]').tooltip({container:'body'});
+        $('[data-rel=popover]').popover({container:'body'});
+
+        autosize($('textarea[class*=autosize]'));
+
+        $('textarea.limited').inputlimiter({
+            remText: '%n character%s remaining...',
+            limitText: 'max allowed : %n.'
+        });
+
+        $.mask.definitions['~']='[+-]';
+        $('.input-mask-date').mask('99/99/9999');
+        $('.input-mask-phone').mask('(999) 999-9999');
+        $('.input-mask-eyescript').mask('~9.99 ~9.99 999');
+        $(".input-mask-product").mask("a*-999-a999",{placeholder:" ",completed:function(){alert("You typed the following: "+this.val());}});
+
+       
+        $( "#input-size-slider" ).css('width','200px').slider({
+            value:1,
+            range: "min",
+            min: 1,
+            max: 8,
+            step: 1,
+            slide: function( event, ui ) {
+                var sizing = ['', 'input-sm', 'input-lg', 'input-mini', 'input-small', 'input-medium', 'input-large', 'input-xlarge', 'input-xxlarge'];
+                var val = parseInt(ui.value);
+                $('#form-field-4').attr('class', sizing[val]).attr('placeholder', '.'+sizing[val]);
+            }
+        });
+
+        $( "#input-span-slider" ).slider({
+            value:1,
+            range: "min",
+            min: 1,
+            max: 12,
+            step: 1,
+            slide: function( event, ui ) {
+                var val = parseInt(ui.value);
+                $('#form-field-5').attr('class', 'col-xs-'+val).val('.col-xs-'+val);
+            }
+        });
+
+
+
+        //"jQuery UI Slider"
+        //range slider tooltip example
+        $( "#slider-range" ).css('height','200px').slider({
+            orientation: "vertical",
+            range: true,
+            min: 0,
+            max: 100,
+            values: [ 17, 67 ],
+            slide: function( event, ui ) {
+                var val = ui.values[$(ui.handle).index()-1] + "";
+
+                if( !ui.handle.firstChild ) {
+                    $("<div class='tooltip right in' style='display:none;left:16px;top:-6px;'><div class='tooltip-arrow'></div><div class='tooltip-inner'></div></div>")
+                        .prependTo(ui.handle);
+                }
+                $(ui.handle.firstChild).show().children().eq(1).text(val);
+            }
+        }).find('span.ui-slider-handle').on('blur', function(){
+            $(this.firstChild).hide();
+        });
+
+
+        $( "#slider-range-max" ).slider({
+            range: "max",
+            min: 1,
+            max: 10,
+            value: 2
+        });
+
+        $( "#slider-eq > span" ).css({width:'90%', 'float':'left', margin:'15px'}).each(function() {
+            // read initial values from markup and remove that
+            var value = parseInt( $( this ).text(), 10 );
+            $( this ).empty().slider({
+                value: value,
+                range: "min",
+                animate: true
+
+            });
+        });
+
+        $("#slider-eq > span.ui-slider-purple").slider('disable');//disable third item
+
+
+        $('#id-input-file-1 , #id-input-file-2').ace_file_input({
+            no_file:'No File ...',
+            btn_choose:'Choose',
+            btn_change:'Change',
+            droppable:false,
+            onchange:null,
+            thumbnail:false //| true | large
+            //whitelist:'gif|png|jpg|jpeg'
+            //blacklist:'exe|php'
+            //onchange:''
+            //
+        });
+        //pre-show a file name, for example a previously selected file
+        //$('#id-input-file-1').ace_file_input('show_file_list', ['myfile.txt'])
+
+
+        $('#id-input-file-3').ace_file_input({
+            style: 'well',
+            btn_choose: 'Drop files here or click to choose',
+            btn_change: null,
+            no_icon: 'ace-icon fa fa-cloud-upload',
+            droppable: true,
+            thumbnail: 'small'//large | fit
+            //,icon_remove:null//set null, to hide remove/reset button
+            /**,before_change:function(files, dropped) {
+						//Check an example below
+						//or examples/file-upload.html
+						return true;
+					}*/
+            /**,before_remove : function() {
+						return true;
+					}*/
+            ,
+            preview_error : function(filename, error_code) {
+                //name of the file that failed
+                //error_code values
+                //1 = 'FILE_LOAD_FAILED',
+                //2 = 'IMAGE_LOAD_FAILED',
+                //3 = 'THUMBNAIL_FAILED'
+                //alert(error_code);
+            }
+
+        }).on('change', function(){
+            //console.log($(this).data('ace_input_files'));
+            //console.log($(this).data('ace_input_method'));
+        });
+
+
+        //$('#id-input-file-3')
+        //.ace_file_input('show_file_list', [
+        //{type: 'image', name: 'name of image', path: 'http://path/to/image/for/preview'},
+        //{type: 'file', name: 'hello.txt'}
+        //]);
+
+
+
+
+        //dynamically change allowed formats by changing allowExt && allowMime function
+        $('#id-file-format').removeAttr('checked').on('change', function() {
+            var whitelist_ext, whitelist_mime;
+            var btn_choose
+            var no_icon
+            if(this.checked) {
+                btn_choose = "Drop images here or click to choose";
+                no_icon = "ace-icon fa fa-picture-o";
+
+                whitelist_ext = ["jpeg", "jpg", "png", "gif" , "bmp"];
+                whitelist_mime = ["image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp"];
+            }
+            else {
+                btn_choose = "Drop files here or click to choose";
+                no_icon = "ace-icon fa fa-cloud-upload";
+
+                whitelist_ext = null;//all extensions are acceptable
+                whitelist_mime = null;//all mimes are acceptable
+            }
+            var file_input = $('#id-input-file-3');
+            file_input
+                .ace_file_input('update_settings',
+                    {
+                        'btn_choose': btn_choose,
+                        'no_icon': no_icon,
+                        'allowExt': whitelist_ext,
+                        'allowMime': whitelist_mime
+                    })
+            file_input.ace_file_input('reset_input');
+
+            file_input
+                .off('file.error.ace')
+                .on('file.error.ace', function(e, info) {
+                    //console.log(info.file_count);//number of selected files
+              
+                });
+
+
+        });
+
+        $('#spinner1').ace_spinner({value:0,min:0,max:200,step:10, btn_up_class:'btn-info' , btn_down_class:'btn-info'})
+            .closest('.ace-spinner')
+            .on('changed.fu.spinbox', function(){
+                //console.log($('#spinner1').val())
+            });
+        $('#spinner2').ace_spinner({value:0,min:0,max:10000,step:100, touch_spinner: true, icon_up:'ace-icon fa fa-caret-up bigger-110', icon_down:'ace-icon fa fa-caret-down bigger-110'});
+        $('#spinner3').ace_spinner({value:0,min:-100,max:100,step:10, on_sides: true, icon_up:'ace-icon fa fa-plus bigger-110', icon_down:'ace-icon fa fa-minus bigger-110', btn_up_class:'btn-success' , btn_down_class:'btn-danger'});
+        $('#spinner4').ace_spinner({value:0,min:-100,max:100,step:10, on_sides: true, icon_up:'ace-icon fa fa-plus', icon_down:'ace-icon fa fa-minus', btn_up_class:'btn-purple' , btn_down_class:'btn-purple'});
+
+
+        $('.date-picker').datepicker({
+            autoclose: true,
+            language: "cn",
+            todayHighlight: true
+        })
+            //show datepicker when clicking on the icon
+            .next().on(ace.click_event, function(){
+            $(this).prev().focus();
+        });
+
+        //or change it into a date range picker
+        $('.input-daterange').datepicker({autoclose:true});
+
+
+        //to translate the daterange picker, please copy the "examples/daterange-fr.js" contents here before initialization
+        $('input[name=date-range-picker]').daterangepicker({
+            'applyClass' : 'btn-sm btn-success',
+            'cancelClass' : 'btn-sm btn-default',
+            locale: {
+                applyLabel: 'Apply',
+                cancelLabel: 'Cancel',
+            }
+        })
+            .prev().on(ace.click_event, function(){
+            $(this).next().focus();
+        });
+
+
+        $('.timepicker-time').timepicker({
+            minuteStep: 1,
+            showSeconds: true,
+            showMeridian: false,
+            disableFocus: true,
+            icons: {
+                up: 'fa fa-chevron-up',
+                down: 'fa fa-chevron-down'
+            }
+        }).on('focus', function() {
+            $('.timepicker-time').timepicker('showWidget');
+        }).next().on(ace.click_event, function(){
+            $(this).prev().focus();
+        });
+
+
+
+
+        if(!ace.vars['old_ie']) $('.date-time').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm:ss',
+            icons: {
+                time: 'fa fa-clock-o',
+                date: 'fa fa-calendar',
+                up: 'fa fa-chevron-up',
+                down: 'fa fa-chevron-down',
+                previous: 'fa fa-chevron-left',
+                next: 'fa fa-chevron-right',
+                today: 'fa fa-arrows ',
+                clear: 'fa fa-trash',
+                close: 'fa fa-times'
+            }
+        }).next().on(ace.click_event, function(){
+            $(this).prev().focus();
+        });
+
+
+        $('.colorpicker').colorpicker();
+        //$('.colorpicker').last().css('z-index', 2000);//if colorpicker is inside a modal, its z-index should be higher than modal'safe
+
+        $('#simple-colorpicker-1').ace_colorpicker();
+        //$('#simple-colorpicker-1').ace_colorpicker('pick', 2);//select 2nd color
+        //$('#simple-colorpicker-1').ace_colorpicker('pick', '#fbe983');//select #fbe983 color
+        //var picker = $('#simple-colorpicker-1').data('ace_colorpicker')
+        //picker.pick('red', true);//insert the color if it doesn't exist
+
+
+        $(".knob").knob();
+
+
+        var tag_input = $('#form-field-tags');
+        try{
+            tag_input.tag(
+                {
+                    placeholder:tag_input.attr('placeholder'),
+                    //enable typeahead by specifying the source array
+                    source: ace.vars['US_STATES'],//defined in ace.js >> ace.enable_search_ahead
+                    /**
+                     //or fetch data from database, fetch those that match "query"
+                     source: function(query, process) {
+						  $.ajax({url: 'remote_source.php?q='+encodeURIComponent(query)})
+						  .done(function(result_items){
+							process(result_items);
+						  });
+						}
+                     */
+                }
+            )
+
+            //programmatically add/remove a tag
+            var $tag_obj = $('#form-field-tags').data('tag');
+            $tag_obj.add('Programmatically Added');
+
+            var index = $tag_obj.inValues('some tag');
+            $tag_obj.remove(index);
+        }
+        catch(e) {
+            //display a textarea for old IE, because it doesn't support this plugin or another one I tried!
+            tag_input.after('<textarea id="'+tag_input.attr('id')+'" name="'+tag_input.attr('name')+'" rows="3">'+tag_input.val()+'</textarea>').remove();
+            //autosize($('#form-field-tags'));
+        }
+
+
+        /////////
+        $('#modal-form input[type=file]').ace_file_input({
+            style:'well',
+            btn_choose:'Drop files here or click to choose',
+            btn_change:null,
+            no_icon:'ace-icon fa fa-cloud-upload',
+            droppable:true,
+            thumbnail:'large'
+        })
+
+        //chosen plugin inside a modal will have a zero width because the select element is originally hidden
+        //and its width cannot be determined.
+        //so we set the width after modal is show
+        $('#modal-form').on('shown.bs.modal', function () {
+            if(!ace.vars['touch']) {
+                $(this).find('.chosen-container').each(function(){
+                    $(this).find('a:first-child').css('width' , '210px');
+                    $(this).find('.chosen-drop').css('width' , '210px');
+                    $(this).find('.chosen-search input').css('width' , '200px');
+                });
+            }
+        })
+        /**
+         //or you can activate the chosen plugin after modal is shown
+         //this way select element becomes visible with dimensions and chosen works as expected
+         $('#modal-form').on('shown', function () {
+					$(this).find('.modal-chosen').chosen();
+				})
+         */
+
+
+
+        $(document).one('ajaxloadstart.page', function(e) {
+            autosize.destroy('textarea[class*=autosize]')
+
+            $('.limiterBox,.autosizejs').remove();
+            $('.daterangepicker.dropdown-menu,.colorpicker.dropdown-menu,.bootstrap-datetimepicker-widget.dropdown-menu').remove();
+        });
+
+    });
+</script>
+
+<script type="text/javascript">
+    submitForm($('#form'));
+</script>
+
+</body>
+</html>

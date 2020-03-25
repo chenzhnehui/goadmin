@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>{{template "admin/common/head.html" .}}</head>
+	<body class="{{.ACE_SIKN}}">
+  		{{template "admin/common/navbar.html" .}}
+		<div class="main-container ace-save-state" id="main-container">
+			<script type="text/javascript">
+				try{ace.settings.loadState('main-container')}catch(e){}
+			</script>
+
+		 	{{template "admin/common/sidebar.html" .}}
+			<div class="main-content">
+				<div class="main-content-inner">
+					{{template "admin/common/breadcrumbs.html" .}}
+					<div class="page-content">
+						<div class="page-header">
+							<form action="?" class="form-inline">
+								{{if CheckPrivileges "/admin/attribute/add" .adminInfo.Id}} 
+							    <a  class="btn btn-sm btn-success" href="/admin/attribute/add?model_id={{.model_id}}">&emsp;添加&emsp; </a>
+							    {{end}}
+							    {{if CheckPrivileges "/admin/attribute/del" .adminInfo.Id}} 
+							    <a class="btn btn-sm btn-error del-confirm" data-id="checkbox-ids" data-url="/admin/attribute/del">&emsp;删除&emsp; </a>
+							     {{end}}
+							        
+							    <input class="form-control" type="text" name="title"  placeholder="名称"
+							    value="{{.params.title}}" >
+
+							    <button type="submit" class="btn btn-sm btn-success">
+							        &emsp;搜索&emsp;
+							    </button>
+							
+							</form>
+						</div><!-- /.page-header -->
+
+						<div class="row">
+							<div class="col-xs-12">
+								<!-- PAGE CONTENT BEGINS -->
+								<div class="row">
+									<div class="col-xs-12">
+										<table id="simple-table" class="table  table-bordered table-hover">
+											<thead>
+												<tr>
+													<th class="center">
+														<label class="pos-rel">
+															<input type="checkbox" class="ace" />
+															<span class="lbl"></span>
+														</label>
+													</th>
+													<th>标题</th>
+													<th>字段</th>
+													<th>类型</th>
+													<th>状态</th>
+													<th>创建时间</th>
+													<th>操作</th>
+												</tr>
+											</thead>
+
+											<tbody>
+
+											 {{range $k,$v := .list}}
+												<tr>
+													<td class="center">
+														<label class="pos-rel">
+															<input type="checkbox" class="ace checkbox-ids" value="{{$v.Id}}" />
+															<span class="lbl"></span>
+														</label>
+													</td>
+													<td>{{$v.Title}}</td>
+													<td>{{$v.Name}}</td>
+													<td>{{GetConfigType $v.Type}}</td>
+														
+													
+													<td>{{if eq $v.Status 0}} <span class="label label-sm label-warning">禁用</span>{{else}} <span class="label label-sm label-success">启用</span>{{end}}</td>
+
+													<td>{{$v.CreateTime}}</td>
+
+
+													<td>
+														<div class="hidden-sm hidden-xs btn-group">
+															{{if CheckPrivileges "/admin/attribute/edit" $.adminInfo.Id}}
+															<a href="/admin/attribute/edit?id={{$v.Id}}">编辑</a>
+															|{{end}}
+															{{if CheckPrivileges "/admin/attribute/del" $.adminInfo.Id}}
+															<a href="javascript:;" class="del-confirm" data-id="{{$v.Id}}" data-url="/admin/attribute/del">删除</a>{{end}}
+														</div>
+
+													
+													</td>
+												</tr>
+
+											 {{end}}
+
+											</tbody>
+										</table>
+										<div class="row">
+										    <div class="col-xs-6">
+										        <div class="dataTables_info" id="dynamic-table_info" role="status" aria-live="polite">共 {{.count}} 条数据</div></div>
+											    <div class="col-xs-6">
+											        <div class="dataTables_paginate paging_simple_numbers" id="dynamic-table_paginate">
+											           {{template "admin/common/page.html" .}}
+											        </div>
+											    </div>
+										</div>
+									
+									</div><!-- /.span -->
+								</div><!-- /.row -->
+								<!-- PAGE CONTENT ENDS -->
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+					</div><!-- /.page-content -->
+				</div>
+			</div><!-- /.main-content -->
+
+           {{template "admin/common/footer.html" .}}
+
+		</div><!-- /.main-container -->
+
+		<!-- basic scripts -->
+
+		<!--[if !IE]> -->
+		<script src="/static/assets/js/jquery-2.1.4.min.js"></script>
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+<script src="/static/assets/js/jquery-1.11.3.min.js"></script>
+<![endif]-->
+        {{template "admin/common/js.html" .}}
+		<script type="text/javascript">
+			if('ontouchstart' in document.documentElement) document.write("<script src='/static/assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+		</script>
+		<script src="/static/assets/js/bootstrap.min.js"></script>
+
+		<!-- page specific plugin scripts -->
+		<script src="/static/assets/js/jquery.dataTables.min.js"></script>
+		<script src="/static/assets/js/jquery.dataTables.bootstrap.min.js"></script>
+		<script src="/static/assets/js/dataTables.buttons.min.js"></script>
+		<script src="/static/assets/js/buttons.flash.min.js"></script>
+		<script src="/static/assets/js/buttons.html5.min.js"></script>
+		<script src="/static/assets/js/buttons.print.min.js"></script>
+		<script src="/static/assets/js/buttons.colVis.min.js"></script>
+		<script src="/static/assets/js/dataTables.select.min.js"></script>
+
+		<!-- ace scripts -->
+		<script src="/static/assets/js/ace-elements.min.js"></script>
+		<script src="/static/assets/js/ace.min.js"></script>
+
+
+		<!-- inline scripts related to this page -->
+		<script type="text/javascript">
+			jQuery(function($) {
+				//initiate dataTables plugin
+
+			
+			
+				/////////////////////////////////
+				//table checkboxes
+				$('th input[type=checkbox], td input[type=checkbox]').prop('checked', false);
+				
+				//select/deselect all rows according to table header checkbox
+				$('#dynamic-table > thead > tr > th input[type=checkbox], #dynamic-table_wrapper input[type=checkbox]').eq(0).on('click', function(){
+					var th_checked = this.checked;//checkbox inside "TH" table header
+					
+					$('#dynamic-table').find('tbody > tr').each(function(){
+						var row = this;
+						if(th_checked) myTable.row(row).select();
+						else  myTable.row(row).deselect();
+					});
+				});
+				
+				//select/deselect a row when the checkbox is checked/unchecked
+				$('#dynamic-table').on('click', 'td input[type=checkbox]' , function(){
+					var row = $(this).closest('tr').get(0);
+					if(this.checked) myTable.row(row).deselect();
+					else myTable.row(row).select();
+				});
+			
+			
+			
+				$(document).on('click', '#dynamic-table .dropdown-toggle', function(e) {
+					e.stopImmediatePropagation();
+					e.stopPropagation();
+					e.preventDefault();
+				});
+				
+				
+				
+				//And for the first simple table, which doesn't have TableTools or dataTables
+				//select/deselect all rows according to table header checkbox
+				var active_class = 'active';
+				$('#simple-table > thead > tr > th input[type=checkbox]').eq(0).on('click', function(){
+					var th_checked = this.checked;//checkbox inside "TH" table header
+					
+					$(this).closest('table').find('tbody > tr').each(function(){
+						var row = this;
+						if(th_checked) $(row).addClass(active_class).find('input[type=checkbox]').eq(0).prop('checked', true);
+						else $(row).removeClass(active_class).find('input[type=checkbox]').eq(0).prop('checked', false);
+					});
+				});
+				
+				//select/deselect a row when the checkbox is checked/unchecked
+				$('#simple-table').on('click', 'td input[type=checkbox]' , function(){
+					var $row = $(this).closest('tr');
+					if($row.is('.detail-row ')) return;
+					if(this.checked) $row.addClass(active_class);
+					else $row.removeClass(active_class);
+				});
+			
+			
+				/********************************/
+				//add tooltip for small view action buttons in dropdown menu
+				$('[data-rel="tooltip"]').tooltip({placement: tooltip_placement});
+				
+				//tooltip placement on right or left
+				function tooltip_placement(context, source) {
+					var $source = $(source);
+					var $parent = $source.closest('table')
+					var off1 = $parent.offset();
+					var w1 = $parent.width();
+			
+					var off2 = $source.offset();
+					//var w2 = $source.width();
+			
+					if( parseInt(off2.left) < parseInt(off1.left) + parseInt(w1 / 2) ) return 'right';
+					return 'left';
+				}
+
+				
+				/***************/
+				$('.show-details-btn').on('click', function(e) {
+					e.preventDefault();
+					$(this).closest('tr').next().toggleClass('open');
+					$(this).find(ace.vars['.icon']).toggleClass('fa-angle-double-down').toggleClass('fa-angle-double-up');
+				});
+				/***************/
+
+			})
+
+		</script>
+		{{template "admin/common/del.html"}}
+	</body>
+</html>
