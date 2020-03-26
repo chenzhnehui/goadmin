@@ -2,6 +2,7 @@
 
 项目线上聊天 案例  http://goadmin.woaishare.cn
 项内容管理系统 案例   http://goadmin.woaishare.cn/admin  测试账号：test  密码：123456
+若您有疑问或需要源代码，可进QQ群 1062428023 咨询
 
 
 内容管理系统，可以自定义模型，显示列表字段，分类，验证规则，使用beego开发，也有websocket群里功能,类似thinkphp的onethink
