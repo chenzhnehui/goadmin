@@ -13,7 +13,13 @@
 				<div class="main-content-inner">
 					{{template "admin/common/breadcrumbs.html" .}}
 					<div class="page-content">
-                        <div class="row">
+						<div class="page-header">
+							{{if CheckPrivileges "/admin/category/add" .adminInfo.Id}}
+								<a  class="btn btn-sm btn-success" href="/admin/category/add">&emsp;添加分类 </a>
+							{{end}}
+						</div><!-- /.page-header -->
+
+						<div class="row">
                             <div class='col-xs-12 col-sm-12 pricing-box'>
                                 <div class="widget-box widget-color-dark">
                                     <div class="widget-header">

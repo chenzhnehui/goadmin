@@ -70,7 +70,7 @@
                             <strong class="green">
                                 <a href="/admin">进入管理后台</a>
                             </strong>
-                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;测试账号：admin &emsp;密码：123456 &emsp;只为开源分享，请勿破坏平台，若您有疑问或需要源代码，可进QQ群 1062428023 
+                            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;测试账号：test &emsp;密码：123456 &emsp;只为开源分享，请勿破坏平台，若您有疑问或需要源代码，可进QQ群 1062428023 咨询和下载
                         
                         </div>
                         <div class="row">
@@ -79,7 +79,7 @@
                                     <div class="widget-header">
                                         <h4 class="widget-title lighter smaller">
                                             <i class="ace-icon fa fa-comment blue"></i>
-                                            聊天案例
+                                            聊天案例  &emsp;当前在线人数(<strong style="color: red" id="groupcount">1</strong>)人
                                         </h4>
                                     </div>
 
@@ -97,7 +97,7 @@
 
                                             </div>
 
-                                            <form>
+                                            <form onsubmit="$('#send').click();return false;">
                                                 <div class="form-actions">
                                                     <div class="input-group">
                                                         <input placeholder="Type your message here ..." type="text" class="form-control" name="message" id="message" />
@@ -161,9 +161,22 @@
 
 <script type="text/javascript">
         var conn;
+        setInterval(function(){
+           if(conn == undefined || conn==null || conn=='undefined' ||  conn=='' || conn.readyState != 1){
+              initWebSocket()
+           }
+        },10000)
         window.onload = function () {
         if (window["WebSocket"]) {
-            conn = new WebSocket("ws://" + document.location.host + "/ws");  conn.onclose = function (evt) { };
+           initWebSocket()
+        } else {
+            console("Your browser does not support WebSockets.")
+        }
+    };
+
+    function initWebSocket(){
+            conn = new WebSocket("ws://" + document.location.host + "/ws");  
+            conn.onclose = function (evt) { };
             conn.onopen = function (evt) { };
             conn.onmessage = function (evt) {
                 msg = eval("("+evt.data+")")
@@ -178,38 +191,66 @@
                     $.post(location.href,{client_id:msg.clientid},function (res) {})
                     return
                 }
+                if(msg.type == "groupcount"){
+                    $("#groupcount").text(msg.message)
+                    return
+                }
                 if(msg.type == "chat"){
-                    message = eval("("+msg.message+")")
-                    headimg = (message.sex == "1")?"/static/assets/images/avatars/avatar4.png": "/static/assets/images/avatars/avatar1.png";
-                    if(message.sessionid == createRandomId()){
-                        sessionStr = "【自己】"
-                    }else{
-                        sessionStr = "【游客】"
-                    }
-                    var  html = '<div class="itemdiv dialogdiv">';
-                            html += ' <div class="user">';
-                            html += ' <img src="'+headimg+'">';
-                             html += '</div>';
-                             html += '<div class="body">';
-                                 html += '<div class="time">';
-                                     html += '<i class="ace-icon fa fa-clock-o"></i>';
-                                     html += '<span class="green">'+message.time+'</span>';
-                                html += ' </div>';
-                                 html += '<div class="name">';
-                                     html += '<a href="#">'+sessionStr+message.nickname+'</a>';
-                                html += ' </div>';
-                                 html += '<div class="text">'+message.content+'</div>';
-                            html += ' </div>';
-                         html += '</div>';
-                    $("#box").append(html)
-                     var div = document.getElementById('box');
-                    div.scrollTop = div.scrollHeight;
+                    addMsg( eval("("+msg.message+")"),1)
                 }
             };
-        } else {
-            console("Your browser does not support WebSockets.")
+    }
+
+        function addMsg(message,type){
+            if(type == 1){
+                var messageArr  = new Array()
+                messageStr = localStorage.getItem("messagestr");
+                if(messageStr != "" && messageStr != "null" && messageStr != null){
+                    messageArr = messageStr.split("||"); //字符分割
+                }
+
+                if(messageArr.length > 6){
+                    messageArr.shift()
+                }
+                messageArr.push(JSON.stringify(message))
+                localStorage.setItem("messagestr",messageArr.join("||"));
+            }
+            var sex = parseInt(message.sex)
+            if(sex < 20){
+                headimg = '/static/assets/images/avatars/avatar.png'
+            }else if(sex <40){
+                headimg = '/static/assets/images/avatars/avatar1.png'
+            }else if(sex <60){
+                headimg = '/static/assets/images/avatars/avatar3.png'
+            }else if(sex <80){
+                headimg = '/static/assets/images/avatars/avatar4.png'
+            }else{
+                headimg = '/static/assets/images/avatars/avatar5.png'
+            }
+            if(message.sessionid == createRandomId()){
+                sessionStr = "【自己】"
+            }else{
+                sessionStr = "【游客】"
+            }
+            var  html = '<div class="itemdiv dialogdiv">';
+            html += ' <div class="user">';
+            html += ' <img src="'+headimg+'">';
+            html += '</div>';
+            html += '<div class="body">';
+            html += '<div class="time">';
+            html += '<i class="ace-icon fa fa-clock-o"></i>';
+            html += '<span class="green">'+message.time+'</span>';
+            html += ' </div>';
+            html += '<div class="name">';
+            html += '<a href="#">'+sessionStr+message.nickname+'</a>';
+            html += ' </div>';
+            html += '<div class="text">'+message.content+'</div>';
+            html += ' </div>';
+            html += '</div>';
+            $("#box").append(html)
+            var div = document.getElementById('box');
+            div.scrollTop = div.scrollHeight;
         }
-    };
 
 
     $(function(){
@@ -225,38 +266,20 @@
                     function(result) {
                     if (result != null && result != "") {
                        localStorage.setItem("nickname",result);
-                       localStorage.setItem("sex",Math.round(Math.random()));
+                       localStorage.setItem("sex",Math.ceil(Math.random()*100));
                        $("#send").click()
                     } 
                 });                
             }else{
-                var myDate = new Date();var mytime=myDate.toLocaleString( ); 
-                headimg = (sex == "1")?"/static/assets/images/avatars/avatar4.png": "/static/assets/images/avatars/avatar1.png";
-                var  html = '<div class="itemdiv dialogdiv">';
-                        html += ' <div class="user">';
-                         html += ' <img src="'+headimg+'">';
-                         html += '</div>';
-                         html += '<div class="body">';
-                             html += '<div class="time">';
-                                 html += '<i class="ace-icon fa fa-clock-o"></i>';
-                                 html += '<span class="green">'+mytime+'</span>';
-                            html += ' </div>';
-                             html += '<div class="name">';
-                                 html += '<a href="#">【自己】'+nickname+'</a>';
-                            html += ' </div>';
-                             html += '<div class="text">'+content+'</div>';
-                        html += ' </div>';
-                     html += '</div>';
-                $("#box").append(html)
-
+                var myDate = new Date();
                 var message = {};
                 message.nickname = nickname
                 message.sex = sex
                 message.content = content
-                message.time = mytime
+                message.time = myDate.toLocaleString( );
                 message.sessionid = createRandomId()
-                var div = document.getElementById('box');
-                div.scrollTop = div.scrollHeight;
+
+                addMsg(message,1)
 
                 var obj = {};
                 obj.type = "chat";
@@ -280,6 +303,17 @@ function createRandomId() {
     }
     return sessionid
 }
+
+        var messageArr  = new Array()
+        messageStr = localStorage.getItem("messagestr");
+        if(messageStr != "" && messageStr != "null" && messageStr != null){
+            messageArr = messageStr.split("||"); //字符分割
+        }
+        if(messageArr.length > 0){
+            for(var i=0;i<messageArr.length;i++){
+                addMsg( eval("("+messageArr[i]+")"),0)
+            }
+        }
 
 </script>
 </body>

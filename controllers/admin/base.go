@@ -92,6 +92,8 @@ func (this *BaseController) Prepare() {
 					}
 				}
 			}
+			//ctx.Output.JSON(map[string]interface{}{"code": 0, "msg": "该平台为共享案例平台，请勿操作数据，谢谢！"}, false, false)
+			//return
 		}
 		//文章分类权限
 	}

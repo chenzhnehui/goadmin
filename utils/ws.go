@@ -28,18 +28,17 @@ type Message struct {
 }
 
 //客户端
-type Client struct {
+type clientOne struct {
 	Conn    *websocket.Conn
 	Session interface{}
-	Send chan Message
+	Send    chan Message
 }
 
 var (
-	Clients          = make(map[string]Client)          //client 数据
-	ClientUids       = make(map[string]string)          //client_id 到 uid的绑定关系,1对多
-	GroupsClient     = make(map[string]map[string]bool) //group_id 到 client_id的绑定关系,1对多
+	clientsList      = make(map[string]clientOne)       //client 数据
+	clientUids       = make(map[string]string)          //client_id 到 uid的绑定关系,1对多
+	groupsClient     = make(map[string]map[string]bool) //group_id 到 client_id的绑定关系,1对多
 	Msg              = make(chan Message, 10)           // 消息通道，收到的消息
-	Leave            = make(chan string, 10)            // 用户退出通道
 	HandshakeTimeout = 10                               //保持心跳时间
 	Upgrader         = websocket.Upgrader{
 		ReadBufferSize:   1024,
@@ -57,7 +56,6 @@ var (
  */
 func init() {
 	wsping()
-	go wsReadMsg()
 }
 
 //断开链接，关系客户端
@@ -66,17 +64,22 @@ func init() {
 * @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
  */
 func close(client_id string, client ...interface{}) error {
-	delete(Clients, client_id)
-	delete(ClientUids, client_id) //删除uid绑定的客户端
+	delete(clientsList, client_id)
+	delete(clientUids, client_id) //删除uid绑定的客户端
 	if len(client) > 0 {
-		return client[0].(Client).Conn.Close()
+		switch client[0].(type) {
+		case clientOne:
+			client[0].(clientOne).Conn.Close()
+		}
 	}
-	for group_id, clients := range GroupsClient {
+	for group_id, clients := range groupsClient {
 		if _, ok := clients[client_id]; ok {
-			delete(GroupsClient[group_id], client_id)
+			delete(groupsClient[group_id], client_id)
+			Msg <- Message{Clientid: client_id, Type: "levelgroup", Message: group_id}
 		}
 		if len(clients) == 0 {
-			delete(GroupsClient, group_id)
+			delete(groupsClient, group_id)
+			Msg <- Message{Type: "ungroup", Message: group_id}
 		}
 	}
 	return nil
@@ -97,71 +100,50 @@ func wsping() error {
 	return nil
 }
 
-//读取通道消息
-/**
-* @Author  chenzhenhui <971688607@qq.com>
-* @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
- */
-func wsReadMsg() {
-	for {
-
-		select { // 消息通道中有消息则执行，否则堵塞	// 哪个case可以执行，则转入到该case。都不可执行，则堵塞。
-
-		case msg := <-Msg:
-
-			switch msg.Type { //消息类型
-			case "pong":
-			case "level":
-				close(msg.Clientid)
-			case "chat":
-				WsSendToGroup(msg,"system-home-index",msg.Clientid)
-			default:
-			}
-		case clientid := <-Leave:
-			Msg <- Message{Clientid: clientid, Type: "level", Message: "用户退出"}
-		}
-	}
-}
-
 /**
 初始化连接
 * @Author  chenzhenhui <971688607@qq.com>
 * @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
 */
 func ConnectInit(ws *websocket.Conn) string {
-	client := Client{Send:make(chan Message)}
+	client := clientOne{Send: make(chan Message)}
 	client.Conn = ws
 	client_id := fmt.Sprintf("%p", unsafe.Pointer(ws))
-	Clients[client_id] = client
+	clientsList[client_id] = client
 
 	go readMsg(&client)
 	go writeMsg(&client)
-	WsSendToClient(client_id, Message{Type: "join", Message: "用户加入", Clientid: client_id})
+	Msg <- Message{Clientid: client_id, Type: "join", Message: "用户加入"}
 	return client_id
 }
 
 /**
 在client通道发送消息
- */
-func writeMsg(client *Client)  {
+*/
+func writeMsg(client *clientOne) {
 	for {
 		select {
-		case data:=<-client.Send:
+		case data := <-client.Send:
 			err := client.Conn.WriteJSON(data)
 			if err != nil {
-				close(fmt.Sprintf("%p", unsafe.Pointer(client.Conn)), client)
+				client.Conn.Close()
+				close(fmt.Sprintf("%p", unsafe.Pointer(client.Conn)))
 			}
 		}
 	}
 }
+
 /**
 在client通道读取消息
 */
-func readMsg(client *Client)  {
+func readMsg(client *clientOne) {
 	client_id := fmt.Sprintf("%p", unsafe.Pointer(client.Conn))
 	defer func() {
-		Leave <- client_id
+		//取出该clien_id绑定的group和uid
+		message := map[string]interface{}{"uid": WsGetUidByClientId(client_id), "group": WsGetGroupCountByClientId(client_id)}
+		Msg <- Message{Clientid: client_id, Type: "level", Message: JsonEncode(message)}
 		client.Conn.Close()
+		close(client_id)
 	}()
 	for {
 		// 读取消息。如果连接断开，则会返回错误	// 由于WebSocket一旦连接，便可以保持长时间通讯，则该接口函数可以一直运行下去，直到连接断开
@@ -183,13 +165,13 @@ clientids 不发消息的客户端
 */
 func WsSendToAll(msg Message, clientids ...interface{}) {
 	var noClientids []string
-	if(len(clientids) > 0){
-		for _,c := range clientids{
-			noClientids = append(noClientids,c.(string))
+	if len(clientids) > 0 {
+		for _, c := range clientids {
+			noClientids = append(noClientids, c.(string))
 		}
 	}
 	go func() {
-		for clientid, client := range Clients {
+		for clientid, client := range clientsList {
 			if len(noClientids) > 0 && InArray(clientid, noClientids) {
 				continue
 			}
@@ -205,8 +187,8 @@ client_id 客户端地址 字符串
 * @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
 */
 func WsSendToClient(client_id string, msg Message) error {
-	if _, ok := Clients[client_id]; ok {
-		Clients[client_id].Send <- msg
+	if _, ok := clientsList[client_id]; ok {
+		clientsList[client_id].Send <- msg
 		return nil
 	}
 	return errors.New("客户端不存在")
@@ -219,10 +201,13 @@ client_id 客户端地址 字符串
 * @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
 */
 func WsCloseClient(client_id string) error {
-	client, ok := Clients[client_id]
+	client, ok := clientsList[client_id]
 	if !ok {
 		return errors.New("客户端不存在")
 	}
+	//取出该clien_id绑定的group和uid
+	message := map[string]interface{}{"uid": WsGetUidByClientId(client_id), "group": WsGetGroupCountByClientId(client_id)}
+	Msg <- Message{Clientid: client_id, Type: "level", Message: JsonEncode(message)}
 	return close(client_id, client)
 }
 
@@ -233,7 +218,7 @@ bool  true 在线 false 不在线
 * @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
 */
 func WsIsOnline(client_id string) bool {
-	_, ok := Clients[client_id]
+	_, ok := clientsList[client_id]
 	return ok
 }
 
@@ -246,10 +231,10 @@ uid解释：这里uid泛指用户id或者设备id，用来唯一确定一个客�
 * @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
 */
 func WsBindUid(client_id, uid string) error {
-	if _, ok := Clients[client_id]; !ok {
+	if _, ok := clientsList[client_id]; !ok {
 		return errors.New("客户端不存在")
 	}
-	ClientUids[client_id] = uid
+	clientUids[client_id] = uid
 	return nil
 }
 
@@ -260,9 +245,9 @@ func WsBindUid(client_id, uid string) error {
 * @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
 */
 func WsUnBindUid(client_id, uid string) error {
-	for c, u := range ClientUids {
+	for c, u := range clientUids {
 		if client_id == c && u == uid {
-			delete(ClientUids, client_id)
+			delete(clientUids, client_id)
 			break
 		}
 	}
@@ -290,12 +275,12 @@ func WsIsUidOnline(uid string) bool {
 */
 func WsGetClientIdByUid(uid string) []string {
 	var clientids []string
-	for client_id, cuid := range ClientUids {
+	for client_id, cuid := range clientUids {
 		if cuid == uid {
-			if _, ok := Clients[client_id]; ok {
+			if _, ok := clientsList[client_id]; ok {
 				clientids = append(clientids, client_id)
 			} else {
-				delete(ClientUids, client_id)
+				delete(clientUids, client_id)
 			}
 		}
 	}
@@ -308,7 +293,7 @@ func WsGetClientIdByUid(uid string) []string {
 * @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
 */
 func WsGetUidByClientId(client_id string) string {
-	return ClientUids[client_id]
+	return clientUids[client_id]
 }
 
 /**
@@ -339,15 +324,16 @@ func WsJoinGroup(client_id, group_id string) error {
 	if group_id == "" {
 		return errors.New("分组不存在")
 	}
-	if _, ok := Clients[client_id]; !ok {
+	if _, ok := clientsList[client_id]; !ok {
 		return errors.New("当前用户不在线")
 	}
 	groupInfo := make(map[string]bool)
-	if _, ok := GroupsClient[group_id]; ok {
-		groupInfo = GroupsClient[group_id]
+	if _, ok := groupsClient[group_id]; ok {
+		groupInfo = groupsClient[group_id]
 	}
 	groupInfo[client_id] = true
-	GroupsClient[group_id] = groupInfo
+	groupsClient[group_id] = groupInfo
+	Msg <- Message{Clientid: client_id, Type: "joingroup", Message: group_id}
 	return nil
 }
 
@@ -358,10 +344,11 @@ func WsJoinGroup(client_id, group_id string) error {
 * @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
 */
 func WsLeaveGroup(client_id, group_id string) error {
-	delete(GroupsClient[group_id], client_id)
-	if len(GroupsClient[group_id]) == 0 {
-		delete(GroupsClient, group_id)
+	delete(groupsClient[group_id], client_id)
+	if len(groupsClient[group_id]) == 0 {
+		delete(groupsClient, group_id)
 	}
+	Msg <- Message{Clientid: client_id, Type: "levelgroup", Message: group_id}
 	return nil
 }
 
@@ -371,9 +358,10 @@ func WsLeaveGroup(client_id, group_id string) error {
 * @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
 */
 func WsUngroup(group_id string) error {
-	if _, ok := GroupsClient[group_id]; ok {
-		delete(GroupsClient, group_id)
+	if _, ok := groupsClient[group_id]; ok {
+		delete(groupsClient, group_id)
 	}
+	Msg <- Message{Type: "ungroup", Message: group_id}
 	return nil
 }
 
@@ -384,7 +372,7 @@ clientids 不发消息的客户端
 * @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
 */
 func WsSendToGroup(msg Message, group_id string, clientids ...interface{}) error {
-	groupInfo, ok := GroupsClient[group_id]
+	groupInfo, ok := groupsClient[group_id]
 	if !ok {
 		return errors.New("分组不存在")
 	}
@@ -392,9 +380,9 @@ func WsSendToGroup(msg Message, group_id string, clientids ...interface{}) error
 		return errors.New("分组成员不存在")
 	}
 	var noClientids []string
-	if(len(clientids) > 0){
-		for _,c := range clientids{
-			noClientids = append(noClientids,c.(string))
+	if len(clientids) > 0 {
+		for _, c := range clientids {
+			noClientids = append(noClientids, c.(string))
 		}
 	}
 	go func() {
@@ -402,8 +390,8 @@ func WsSendToGroup(msg Message, group_id string, clientids ...interface{}) error
 			if len(noClientids) > 0 && InArray(clientid, noClientids) {
 				continue
 			}
-			if _, ok := Clients[clientid]; ok {
-				Clients[clientid].Send <- msg
+			if _, ok := clientsList[clientid]; ok {
+				clientsList[clientid].Send <- msg
 			}
 		}
 	}()
@@ -416,11 +404,28 @@ func WsSendToGroup(msg Message, group_id string, clientids ...interface{}) error
 * @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
 */
 func WsGetClientIdCountByGroup(group_id string) int {
-	groupInfo, ok := GroupsClient[group_id]
+	groupInfo, ok := groupsClient[group_id]
 	if !ok {
 		return 0
 	}
 	return len(groupInfo)
+}
+
+/**
+通过client_id 获取该client_id所在分组。
+* @Author  chenzhenhui <971688607@qq.com>
+* @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
+*/
+func WsGetGroupCountByClientId(client_id string) []string {
+	var groups []string
+	for group_id, clients := range groupsClient {
+		for clientid, _ := range clients {
+			if clientid == client_id {
+				groups = append(groups, group_id)
+			}
+		}
+	}
+	return groups
 }
 
 /**
@@ -429,7 +434,7 @@ func WsGetClientIdCountByGroup(group_id string) int {
 * @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
 */
 func WsGetAllClientIdCount() int {
-	return len(Clients)
+	return len(clientsList)
 }
 
 /**
@@ -438,5 +443,5 @@ func WsGetAllClientIdCount() int {
 * @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
 */
 func WsGetClientSessions(client_id string) interface{} {
-	return Clients[client_id].Session
+	return clientsList[client_id].Session
 }

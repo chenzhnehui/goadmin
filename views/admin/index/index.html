@@ -31,7 +31,7 @@
 										<i class="ace-icon fa fa-times"></i>
 									</button>
 									<i class="ace-icon fa fa-check green"></i>
-									欢迎登陆 {{.WEB_NAME}}
+									欢迎登陆 {{.WEB_NAME}}，若您有疑问或需要源代码，可进QQ群 1062428023 咨询和下载源代码
 								</div>
 
 								<div class="row">
@@ -340,7 +340,7 @@
 								return
 							}
 							if(msg.type == "join"){
-								$.post(location.href,{client_id:msg.clientid},function (res) {})
+								$.get(location.href,{client_id:msg.clientid},function (res) {})
 								return
 							}
 							if(msg.type == "system"){

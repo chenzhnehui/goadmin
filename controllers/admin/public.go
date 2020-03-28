@@ -14,7 +14,6 @@ package admin
 
 import (
 	"github.com/astaxie/beego"
-	"goadmin/utils"
 )
 
 type PublicController struct {
@@ -38,15 +37,4 @@ func (this *PublicController) Setskin() {
 		this.ServeJSON()
 		return
 	}
-}
-
-/**
-* @Author  chenzhenhui <971688607@qq.com>
-* @Copyright  2020~2030 http://www.woaishare.cn All rights reserved.
- */
-func (this *PublicController) Test() {
-
-	body := utils.Http("https://upload-images.jianshu.io/upload_images/5637367-6f1b8d1f04b4c02a.png", nil)
-
-	this.Ctx.WriteString(body)
 }
